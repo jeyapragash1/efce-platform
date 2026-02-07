@@ -1,11 +1,11 @@
 # EFCE UI
 
-Enterprise Frontend for Causal & Event Analysis
+Enterprise Platform for Causal & Event Analysis
 
-EFCE UI is a production-ready, frontend-only SaaS dashboard built with Next.js (App Router).
-It focuses on enterprise-grade UI architecture, complex workflows, accessibility, performance, and testing, simulating incident analysis, risk management, causal graph editing, counterfactual simulation, and reporting.
+EFCE UI is a production-ready SaaS dashboard built with Next.js (App Router).
+It focuses on enterprise-grade UI architecture, complex workflows, accessibility, performance, and testing across incident analysis, risk management, causal graph editing, counterfactual simulation, and reporting.
 
-This project intentionally emphasizes frontend system design and quality rather than backend implementation. API boundaries are stubbed and ready for future backend integration.
+The system follows a full-stack architecture with a clean API boundary, typed contracts, and robust persistence.
 
 ## 🚀 Key Highlights
 
@@ -28,9 +28,8 @@ This project intentionally emphasizes frontend system design and quality rather 
 - Tailwind CSS 4
 - Lucide Icons
 
-### Data & State (Frontend-only)
-- localStorage for persistence
-- Mock data modules (src/lib/mock)
+### Data & State
+- Client-side persistence (localStorage)
 - API client boundary (src/lib/api/client.ts)
 
 ### Visualization
@@ -204,12 +203,12 @@ Full run and verification steps are documented in RUNBOOK.md.
 - Graph validation and advanced versioning
 - Real-time updates
 
-## Backend Architecture (Planned)
+## Backend Architecture
 
 EFCE UI is designed with a clear frontend–backend boundary.
-The backend will be implemented using FastAPI with PostgreSQL, focusing on domain-driven APIs and strong data validation.
+The backend uses FastAPI with PostgreSQL, focusing on domain-driven APIs and strong data validation.
 
-### Planned Backend Stack
+### Backend Stack
 
 - FastAPI (Python) – REST API framework
 - PostgreSQL – relational data storage
@@ -219,7 +218,7 @@ The backend will be implemented using FastAPI with PostgreSQL, focusing on domai
 - Alembic – database migrations
 - Pytest – backend testing
 
-### API Design (Planned Domains)
+### API Design (Domains)
 
 The backend will expose REST endpoints aligned with existing UI domains:
 
@@ -232,14 +231,12 @@ The backend will expose REST endpoints aligned with existing UI domains:
 
 ### Data & Persistence
 
-- Server-side persistence will replace frontend localStorage
-- localStorage will remain for:
-  - UI preferences (theme, shortcuts)
-  - Draft states (wizard progress)
-- Backend will act as the source of truth
+- Server-side persistence for core domain data
+- Client-side persistence for UI preferences and draft states
+- Backend as the source of truth
 
 ### Integration Strategy
 
-- Frontend will continue to consume a typed API client
-- Mock API layer will be replaced incrementally
-- Existing UI workflows will remain unchanged during migration
+- Frontend consumes a typed API client
+- API integration is incremental and non-breaking
+- UI workflows remain stable as endpoints evolve
