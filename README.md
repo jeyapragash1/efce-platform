@@ -31,7 +31,8 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 ### Data & State
 - API client boundary (src/lib/api/client.ts)
 - Server-backed data via FastAPI + PostgreSQL
-- Client-side persistence for scenarios and local preferences
+- Authenticated access (JWT) with login-only flow
+- Persisted scenarios, graph studio state, notifications, onboarding, and report exports
 
 ### Visualization
 - React Flow 11 – causal graph editor
@@ -67,13 +68,13 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 ### Notifications
 - Action toasts
 - Notification drawer with unread indicators
-- Mark-as-read functionality
+- Mark-as-read functionality persisted in backend
 
 ### Reports
 - List + preview layout
 - Filters: type, date range, tags, search
 - Report templates gallery
-- Report generation wizard (frontend simulation)
+- Report export logging to backend
 - Loading, empty, and error states
 
 ### Risk Registry
@@ -87,18 +88,18 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - Add/remove nodes and edges
 - Edge confidence slider
 - Evidence notes panel
-- Local versioning using localStorage
+- Backend persistence for graph studio state and versions
 
 ### Counterfactual Lab
 - Scenario builder with toggles and sliders
 - Scenario A vs B comparison
 - Delta chart against baseline
-- Save/load scenarios locally
+- Save/load scenarios via backend
 
 ### Incidents
 - Filtering and search
-- Demo incident generator (creates incidents via API)
 - API-backed incident lifecycle
+- Backend search endpoint
 
 ### Settings
 - Theme toggle
@@ -203,8 +204,9 @@ Full run and verification steps are documented in RUNBOOK.md.
 ## Backend Architecture
 
 The backend is implemented with FastAPI, PostgreSQL, and JWT authentication. It
-provides endpoints for incidents, risks, reports, metrics, patterns, graphs, and
-analysis data.
+provides endpoints for incidents, risks, reports, metrics, patterns, graphs,
+analysis, notifications, onboarding, scenarios, and report exports. Authentication
+is login-only; registration is admin-only.
 
 ### Backend Setup
 ```bash
@@ -213,7 +215,15 @@ python -m venv .venv
 ./.venv/Scripts/activate
 pip install -r requirements.txt
 copy .env.example .env
+alembic upgrade head
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Seed Data
+Generate and load sample data:
+```bash
+cd backend
+psql -d efce -f seed.sql
 ```
 
 ### Frontend API Configuration
@@ -229,20 +239,24 @@ The backend uses FastAPI with PostgreSQL, focusing on domain-driven APIs and str
 - PostgreSQL – relational data storage
 - SQLAlchemy / SQLModel – ORM
 - Pydantic – request/response validation
-- JWT Authentication – access and refresh tokens
+- JWT Authentication – access tokens, login-only
 - Alembic – database migrations
 - Pytest – backend testing
 
 ### API Design (Domains)
 
-The backend will expose REST endpoints aligned with existing UI domains:
+The backend exposes REST endpoints aligned with existing UI domains:
 
 - /auth – authentication and session management
 - /incidents – incident listing, filtering, creation
 - /risks – risk registry, timelines, mitigation actions
 - /reports – report templates, generation, history
 - /graphs – causal graph storage and versioning
+- /graph-studio – graph studio state and versions
+- /notifications – notification feed and read state
+- /onboarding – onboarding progress state
 - /scenarios – counterfactual scenarios and comparisons
+- /report-exports – export audit records
 
 ### Data & Persistence
 
