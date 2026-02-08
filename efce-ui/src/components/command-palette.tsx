@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
 // CommandPalette.tsx
 "use client";
 
@@ -5,9 +6,10 @@ import * as React from "react";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { incidents } from "@/lib/mock/incidents";
-import { risks } from "@/lib/mock/risks";
-import { reports } from "@/lib/mock/reports";
+import type { Incident } from "@/types/incident";
+import type { RiskItem } from "@/types/risk";
+import type { ReportItem } from "@/types/report";
+import { apiClient } from "@/lib/api/client";
 
 type CommandEntry = {
   label: string;
@@ -29,34 +31,34 @@ const PAGES: CommandEntry[] = [
   { label: "Help / Docs", href: "/dashboard/help" },
 ].map((p) => ({ ...p, category: "Page" }));
 
-const INCIDENT_ENTRIES: CommandEntry[] = incidents.map((i) => ({
-  label: `Incident ${i.id} — ${i.title}`,
-  href: `/dashboard/incidents/${i.id}`,
-  category: "Incident",
-  keywords: [i.id, i.title, i.service, i.severity, i.status],
-}));
-
-const RISK_ENTRIES: CommandEntry[] = risks.map((r) => ({
-  label: `Risk ${r.id} — ${r.risk}`,
-  href: "/dashboard/risk-registry",
-  category: "Risk",
-  keywords: [r.id, r.risk, r.owner, r.level, r.status],
-}));
-
-const REPORT_ENTRIES: CommandEntry[] = reports.map((r) => ({
-  label: `Report ${r.id} — ${r.title}`,
-  href: "/dashboard/reports",
-  category: "Report",
-  keywords: [r.id, r.title, r.type, ...r.tags],
-}));
-
-const ENTRIES = [...PAGES, ...INCIDENT_ENTRIES, ...RISK_ENTRIES, ...REPORT_ENTRIES];
-
 export function CommandPalette() {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
+  const [incidents, setIncidents] = React.useState<Incident[]>([]);
+  const [risks, setRisks] = React.useState<RiskItem[]>([]);
+  const [reports, setReports] = React.useState<ReportItem[]>([]);
   const router = useRouter();
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    let active = true;
+    Promise.all([apiClient.getIncidents(), apiClient.getRisks(), apiClient.getReports()])
+      .then(([incidentData, riskData, reportData]) => {
+        if (!active) return;
+        setIncidents(incidentData);
+        setRisks(riskData);
+        setReports(reportData);
+      })
+      .catch(() => {
+        if (!active) return;
+        setIncidents([]);
+        setRisks([]);
+        setReports([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -75,7 +77,32 @@ export function CommandPalette() {
     else setQuery("");
   }, [open]);
 
-  const filtered = ENTRIES.filter((p) => {
+  const entries = React.useMemo(() => {
+    const incidentEntries: CommandEntry[] = incidents.map((i) => ({
+      label: `Incident ${i.id} — ${i.title}`,
+      href: `/dashboard/incidents/${i.id}`,
+      category: "Incident",
+      keywords: [i.id, i.title, i.service, i.severity, i.status],
+    }));
+
+    const riskEntries: CommandEntry[] = risks.map((r) => ({
+      label: `Risk ${r.id} — ${r.risk}`,
+      href: "/dashboard/risk-registry",
+      category: "Risk",
+      keywords: [r.id, r.risk, r.owner, r.level, r.status],
+    }));
+
+    const reportEntries: CommandEntry[] = reports.map((r) => ({
+      label: `Report ${r.id} — ${r.title}`,
+      href: "/dashboard/reports",
+      category: "Report",
+      keywords: [r.id, r.title, r.type, ...r.tags],
+    }));
+
+    return [...PAGES, ...incidentEntries, ...riskEntries, ...reportEntries];
+  }, [incidents, risks, reports]);
+
+  const filtered = entries.filter((p) => {
     const q = query.toLowerCase();
     const inLabel = p.label.toLowerCase().includes(q);
     const inKeywords = p.keywords?.some((k) => k.toLowerCase().includes(q));

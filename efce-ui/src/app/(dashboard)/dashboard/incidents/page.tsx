@@ -1,9 +1,10 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
 import { Topbar } from "@/components/topbar";
-import { incidents as allIncidents } from "@/lib/mock/incidents";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,13 +25,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { Severity, IncidentStatus } from "@/types/incident";
+import type { Severity, IncidentStatus, Incident } from "@/types/incident";
 import { apiClient } from "@/lib/api/client";
 
 type SeverityFilter = "ALL" | Severity;
 type StatusFilter = "ALL" | IncidentStatus;
-
-const STORAGE_KEY = "efce-incidents";
 
 function seededRandom(seed: string) {
   let h = 2166136261;
@@ -51,21 +50,12 @@ export default function IncidentsPage() {
   const [query, setQuery] = React.useState("");
   const [severity, setSeverity] = React.useState<SeverityFilter>("ALL");
   const [status, setStatus] = React.useState<StatusFilter>("ALL");
-  const [incidents, setIncidents] = React.useState(allIncidents);
+  const [incidents, setIncidents] = React.useState<Incident[]>([]);
   const { notify } = useNotifications();
 
   React.useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setIncidents(JSON.parse(stored));
-      return;
-    }
     apiClient.getIncidents().then((data) => setIncidents(data));
   }, []);
-
-  React.useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(incidents));
-  }, [incidents]);
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -90,7 +80,7 @@ export default function IncidentsPage() {
     setStatus("ALL");
   };
 
-  const generateIncident = () => {
+  const generateIncident = async () => {
     const nextId = `INC-${String(incidents.length + 1).padStart(3, "0")}`;
     const rand = seededRandom(nextId);
     const services = ["Orders", "Auth", "Search", "Payments", "Catalog", "Edge API"];
@@ -115,8 +105,13 @@ export default function IncidentsPage() {
       durationMin: Math.floor(rand() * 180) + 10,
     };
 
-    setIncidents((prev) => [newIncident, ...prev]);
-    notify({ message: `Generated ${nextId}`, type: "success" });
+    try {
+      const created = await apiClient.createIncident(newIncident);
+      setIncidents((prev) => [created, ...prev]);
+      notify({ message: `Generated ${nextId}`, type: "success" });
+    } catch {
+      notify({ message: "Failed to create incident", type: "error" });
+    }
   };
 
   return (

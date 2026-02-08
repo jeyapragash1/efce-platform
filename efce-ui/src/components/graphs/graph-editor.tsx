@@ -34,7 +34,7 @@ export function GraphEditor() {
     },
   ]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([
-    { id: "e1-2", source: "1", target: "2", label: "0.7", animated: true },
+    { id: "e1-2", source: "1", target: "2", label: "70%", animated: true },
   ]);
   const [selectedNode, setSelectedNode] = React.useState<Node | null>(null);
   const [newNodeLabel, setNewNodeLabel] = React.useState("");
@@ -46,10 +46,17 @@ export function GraphEditor() {
     { id: string; name: string; createdAt: string; nodes: Node[]; edges: Edge[] }[]
   >("efce-graph-versions", []);
 
+  const createId = React.useCallback(() => {
+    if (typeof globalThis.crypto?.randomUUID === "function") {
+      return globalThis.crypto.randomUUID();
+    }
+    return `id-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }, []);
+
   // Add node
   const addNode = () => {
     if (!newNodeLabel.trim()) return;
-    const id = (nodes.length + 1).toString();
+    const id = createId();
     setNodes((nds) => [
       ...nds,
       {
@@ -90,15 +97,13 @@ export function GraphEditor() {
     } as Connection & { source: string; target: string };
     setEdges((eds) =>
       eds.map((e) =>
-        e.id === oldEdge.id
-          ? { ...e, ...connection, label: `${Math.round(edgeWeight * 100)}%` }
-          : e
+        e.id === oldEdge.id ? { ...e, ...connection, label: oldEdge.label } : e
       )
     );
   };
 
   const saveVersion = () => {
-    const id = Math.random().toString(36).slice(2);
+    const id = createId();
     setVersions((prev) => [
       {
         id,
@@ -116,6 +121,7 @@ export function GraphEditor() {
     if (!version) return;
     setNodes(version.nodes);
     setEdges(version.edges);
+    setSelectedNode(null);
   };
 
   const addEvidence = () => {

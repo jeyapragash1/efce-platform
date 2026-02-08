@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { userEvent, within } from "@storybook/testing-library";
+import { userEvent, within, screen } from "@storybook/testing-library";
 import { expect } from "@storybook/jest";
 import Providers from "@/app/providers";
 import ReportsPage from "@/app/(dashboard)/dashboard/reports/page";
@@ -52,7 +52,7 @@ export const WizardPlay: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByTestId("reports-generate"));
-    const title = await canvas.findByTestId("reports-wizard-title");
+    const title = await screen.findByTestId("reports-wizard-title", {}, { timeout: 3000 });
     expect(title).toBeInTheDocument();
   },
 };

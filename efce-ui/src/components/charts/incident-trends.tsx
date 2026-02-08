@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import {
@@ -9,7 +11,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import type { DailyMetric } from "@/lib/mock/metrics";
+import type { DailyMetric } from "@/types/metrics";
 
 export function IncidentTrends({ data }: { data: DailyMetric[] }) {
   return (

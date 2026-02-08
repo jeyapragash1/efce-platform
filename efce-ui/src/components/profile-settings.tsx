@@ -1,30 +1,56 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { mockUser, UserProfile } from "@/lib/mock/user";
+import { useEffect, useState } from "react";
+import type { UserProfile } from "@/types/user";
+import { apiClient } from "@/lib/api/client";
 
 export function ProfileSettings() {
-  const [profile, setProfile] = useState<UserProfile>(mockUser);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    apiClient
+      .getProfile()
+      .then((data) => {
+        if (!active) return;
+        setProfile(data);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    setProfile((p) => ({ ...p, [name]: value }));
+    setProfile((p) => (p ? { ...p, [name]: value } : p));
   }
 
-  function handleSave() {
+  async function handleSave() {
+    if (!profile) return;
+    const updated = await apiClient.updateProfile(profile);
+    setProfile(updated);
     setEditing(false);
-    // Would persist to backend here
   }
 
   return (
     <Card>
       <CardContent className="p-5 space-y-4">
         <div className="font-semibold text-lg">Profile</div>
-        <div className="grid gap-4">
+        {loading || !profile ? (
+          <div className="text-sm text-muted-foreground">Loading profile...</div>
+        ) : (
+          <div className="grid gap-4">
           <div>
             <div className="text-xs text-muted-foreground">Name</div>
             <Input
@@ -55,7 +81,8 @@ export function ProfileSettings() {
               className="mt-1"
             />
           </div>
-        </div>
+          </div>
+        )}
         <div className="flex gap-2 justify-end">
           {editing ? (
             <>

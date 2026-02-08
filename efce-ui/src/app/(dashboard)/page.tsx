@@ -1,8 +1,11 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import { Topbar } from "@/components/topbar";
 import { Card, CardContent } from "@/components/ui/card";
-import { incidents } from "@/lib/mock/incidents";
+import { apiClient } from "@/lib/api/client";
 
-export default function Page() {
+export default async function Page() {
+  const incidents = await apiClient.getIncidents();
   const open = incidents.filter((i) => i.status === "OPEN").length;
   const sev1 = incidents.filter((i) => i.severity === "SEV1").length;
 
