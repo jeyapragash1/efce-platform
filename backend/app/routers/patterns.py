@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.deps import get_db
+from app.core.deps import get_current_user, get_db
+from app.models.user import User
 from app.models.pattern import CausePattern, RepeatRateTrend, ServiceCauseMatrix
 from app.schemas.pattern import CausePattern as CausePatternSchema
 from app.schemas.pattern import PatternsSummary, RepeatRateTrend as RepeatRateTrendSchema, ServiceCauseMatrixRow
@@ -10,7 +11,10 @@ router = APIRouter(prefix="/patterns", tags=["patterns"])
 
 
 @router.get("", response_model=PatternsSummary)
-def get_patterns(db: Session = Depends(get_db)) -> PatternsSummary:
+def get_patterns(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> PatternsSummary:
     top_causes = [
         CausePatternSchema(cause=p.cause, count=p.count, avg_impact=p.avg_impact)
         for p in db.query(CausePattern).all()

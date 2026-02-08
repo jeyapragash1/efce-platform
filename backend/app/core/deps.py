@@ -9,7 +9,7 @@ from app.core.config import settings
 from app.db.session import SessionLocal
 from app.models.user import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -21,7 +21,8 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def get_current_user_optional(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)),
+    db: Session = Depends(get_db),
 ) -> Optional[User]:
     if not token:
         return None

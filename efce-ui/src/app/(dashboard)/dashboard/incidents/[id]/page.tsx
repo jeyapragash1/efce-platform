@@ -1,29 +1,65 @@
 // Copyright (c) 2026 Jeyapragash. All rights reserved.
 
-import { notFound } from "next/navigation";
+"use client";
+
+import * as React from "react";
+import { useParams } from "next/navigation";
 import { Topbar } from "@/components/topbar";
 import { apiClient } from "@/lib/api/client";
 import { CounterfactualSim } from "@/components/counterfactual-sim";
 import { ExportIncidentPdfButton } from "@/components/export-incident-pdf";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import type { Incident } from "@/types/incident";
+import type { CausalGraph } from "@/types/graph";
+import type { AttributionItem, CounterfactualItem } from "@/types/analysis";
 import GraphWorkspace from "./graph-workspace";
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
+export default function IncidentDetails() {
+  const params = useParams();
+  const incidentId = typeof params?.id === "string" ? params.id : "";
+  const [incident, setIncident] = React.useState<Incident | null>(null);
+  const [graph, setGraph] = React.useState<CausalGraph | null>(null);
+  const [attribution, setAttribution] = React.useState<AttributionItem[]>([]);
+  const [counterfactuals, setCounterfactuals] = React.useState<CounterfactualItem[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [missing, setMissing] = React.useState(false);
 
-export default async function IncidentDetails({ params }: PageProps) {
-  const { id } = await params;
-
-  const incident = await apiClient.getIncident(id).catch(() => null);
-  if (!incident) return notFound();
-
-  const [graph, attribution, counterfactuals] = await Promise.all([
-    apiClient.getCausalGraph(incident.id),
-    apiClient.getAttribution(incident.id),
-    apiClient.getCounterfactuals(incident.id),
-  ]);
+  React.useEffect(() => {
+    if (!incidentId) return;
+    let active = true;
+    setLoading(true);
+    setMissing(false);
+    apiClient
+      .getIncident(incidentId)
+      .then((data) => {
+        if (!active) return;
+        setIncident(data);
+        return Promise.all([
+          apiClient.getCausalGraph(data.id),
+          apiClient.getAttribution(data.id),
+          apiClient.getCounterfactuals(data.id),
+        ]);
+      })
+      .then((result) => {
+        if (!active || !result) return;
+        const [graphData, attributionData, counterfactualData] = result;
+        setGraph(graphData);
+        setAttribution(attributionData);
+        setCounterfactuals(counterfactualData);
+      })
+      .catch(() => {
+        if (!active) return;
+        setMissing(true);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [incidentId]);
 
   const baseFailureProbability = 92;
 
@@ -35,6 +71,24 @@ export default async function IncidentDetails({ params }: PageProps) {
     "11:30 — Emergency rollback",
     "12:15 — Service restored",
   ];
+
+  if (loading) {
+    return (
+      <>
+        <Topbar title="Incident" />
+        <div className="p-6 text-sm text-muted-foreground">Loading incident...</div>
+      </>
+    );
+  }
+
+  if (missing || !incident || !graph) {
+    return (
+      <>
+        <Topbar title="Incident" />
+        <div className="p-6 text-sm text-muted-foreground">Incident not found.</div>
+      </>
+    );
+  }
 
   return (
     <>

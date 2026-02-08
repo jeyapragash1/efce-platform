@@ -27,6 +27,7 @@ def seed_data(db: Session) -> None:
             org="EFCE",
             avatar_url=None,
             hashed_password=hash_password("admin123"),
+            is_admin=True,
         )
         db.add(user)
 

@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import type { Incident } from "@/types/incident";
 import type { RiskItem } from "@/types/risk";
 import type { ReportItem } from "@/types/report";
-import { apiClient } from "@/lib/api/client";
+import { apiClient, getStoredToken } from "@/lib/api/client";
 
 type CommandEntry = {
   label: string;
@@ -40,7 +40,13 @@ export function CommandPalette() {
   const router = useRouter();
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
+  const loadEntries = React.useCallback(() => {
+    if (!getStoredToken()) {
+      setIncidents([]);
+      setRisks([]);
+      setReports([]);
+      return;
+    }
     let active = true;
     Promise.all([apiClient.getIncidents(), apiClient.getRisks(), apiClient.getReports()])
       .then(([incidentData, riskData, reportData]) => {
@@ -73,9 +79,13 @@ export function CommandPalette() {
   }, []);
 
   React.useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 50);
-    else setQuery("");
-  }, [open]);
+    if (open) {
+      loadEntries();
+      setTimeout(() => inputRef.current?.focus(), 50);
+    } else {
+      setQuery("");
+    }
+  }, [open, loadEntries]);
 
   const entries = React.useMemo(() => {
     const incidentEntries: CommandEntry[] = incidents.map((i) => ({

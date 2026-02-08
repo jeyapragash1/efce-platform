@@ -58,13 +58,23 @@ type ApiPatternsSummary = {
 const getBaseUrl = () =>
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-const getToken = () => {
+export const getStoredToken = () => {
   if (typeof window === "undefined") return undefined;
   return localStorage.getItem("efce-token") || undefined;
 };
 
+export const setStoredToken = (token: string) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("efce-token", token);
+};
+
+export const clearStoredToken = () => {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("efce-token");
+};
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = getToken();
+  const token = getStoredToken();
   const headers = new Headers(init?.headers);
   headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -75,6 +85,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== "undefined") {
+      clearStoredToken();
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
     const text = await response.text();
     throw new Error(text || `Request failed with status ${response.status}`);
   }

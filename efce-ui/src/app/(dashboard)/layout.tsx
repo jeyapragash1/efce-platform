@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Jeyapragash. All rights reserved.
 
 import { DashboardShell } from "@/components/dashboard-shell";
+import { AuthGate } from "@/components/auth-gate";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         Skip to content
       </a>
-      <DashboardShell>{children}</DashboardShell>
+      <AuthGate>
+        <DashboardShell>{children}</DashboardShell>
+      </AuthGate>
     </div>
   );
 }

@@ -14,6 +14,7 @@ FastAPI backend for EFCE platform with PostgreSQL and JWT auth.
 ## Notes
 - On first run the database tables are created automatically.
 - Default seed data is inserted if tables are empty.
+- User registration is restricted to admins (invite-only model).
 
 ## Default Admin
 - Email: admin@efce.local
