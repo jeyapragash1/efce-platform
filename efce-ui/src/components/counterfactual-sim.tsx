@@ -41,14 +41,23 @@ export function CounterfactualSim({
   initialStrength?: Record<string, number>;
   onChange?: (state: CounterfactualState) => void;
 }) {
+  const resolvedItems = React.useMemo(
+    () =>
+      items.map((item, index) => ({
+        ...item,
+        resolvedId: item.id ?? `item-${index}`,
+      })),
+    [items]
+  );
+
   const [enabled, setEnabled] = React.useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
-    items.forEach((i) => (init[i.id] = initialEnabled?.[i.id] ?? false));
+    resolvedItems.forEach((i) => (init[i.resolvedId] = initialEnabled?.[i.resolvedId] ?? false));
     return init;
   });
   const [strength, setStrength] = React.useState<Record<string, number>>(() => {
     const init: Record<string, number> = {};
-    items.forEach((i) => (init[i.id] = initialStrength?.[i.id] ?? 1));
+    resolvedItems.forEach((i) => (init[i.resolvedId] = initialStrength?.[i.resolvedId] ?? 1));
     return init;
   });
   const onChangeRef = React.useRef(onChange);
@@ -67,8 +76,8 @@ export function CounterfactualSim({
     setStrength((prev) => ({ ...prev, ...initialStrength }));
   }, [initialStrength]);
 
-  const appliedDelta = items.reduce((sum, i) => {
-    return enabled[i.id] ? sum + i.delta * (strength[i.id] ?? 1) : sum;
+  const appliedDelta = resolvedItems.reduce((sum, i) => {
+    return enabled[i.resolvedId] ? sum + i.delta * (strength[i.resolvedId] ?? 1) : sum;
   }, 0);
 
   const newProbability = Math.max(0, Math.min(100, baseProbability + appliedDelta));
@@ -99,12 +108,15 @@ export function CounterfactualSim({
       </div>
 
       <div className="space-y-3">
-        {items.map((c) => {
-          const checked = !!enabled[c.id];
-          const projected = Math.max(0, Math.min(100, baseProbability + (checked ? appliedDelta : appliedDelta + c.delta)));
+        {resolvedItems.map((c) => {
+          const checked = !!enabled[c.resolvedId];
+          const projected = Math.max(
+            0,
+            Math.min(100, baseProbability + (checked ? appliedDelta : appliedDelta + c.delta))
+          );
 
           return (
-            <div key={c.id} className="border rounded-lg p-4 flex items-start justify-between gap-4">
+            <div key={c.resolvedId} className="border rounded-lg p-4 flex items-start justify-between gap-4">
               <div>
                 <div className="text-sm font-medium">{c.label}</div>
                 <div className="text-xs text-muted-foreground mt-1">
@@ -117,7 +129,7 @@ export function CounterfactualSim({
                 <Switch
                   checked={checked}
                   onCheckedChange={(v) =>
-                    setEnabled((prev) => ({ ...prev, [c.id]: v }))
+                    setEnabled((prev) => ({ ...prev, [c.resolvedId]: v }))
                   }
                 />
                 <input
@@ -125,9 +137,9 @@ export function CounterfactualSim({
                   min={0}
                   max={1}
                   step={0.1}
-                  value={strength[c.id] ?? 1}
+                  value={strength[c.resolvedId] ?? 1}
                   onChange={(e) =>
-                    setStrength((prev) => ({ ...prev, [c.id]: Number(e.target.value) }))
+                    setStrength((prev) => ({ ...prev, [c.resolvedId]: Number(e.target.value) }))
                   }
                   className="w-24"
                   aria-label={`Strength for ${c.label}`}

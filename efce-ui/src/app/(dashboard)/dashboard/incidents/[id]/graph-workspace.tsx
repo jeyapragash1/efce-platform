@@ -19,6 +19,7 @@ export default function GraphWorkspace({
   const [selected, setSelected] = React.useState<MetaNode | null>(null);
 
   const meta = selected?.data?.meta;
+  const selectedLabel = selected?.data?.label ?? "Untitled node";
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
@@ -45,7 +46,7 @@ export default function GraphWorkspace({
           </p>
         ) : (
           <div className="mt-4 space-y-2 text-sm">
-            <div className="font-medium">{selected.data.label}</div>
+            <div className="font-medium">{selectedLabel}</div>
 
             <div className="text-muted-foreground">Timestamp</div>
             <div>{meta?.timestamp ?? "-"}</div>
@@ -60,7 +61,7 @@ export default function GraphWorkspace({
             <div>{typeof meta?.risk === "number" ? meta.risk.toFixed(2) : "-"}</div>
 
             <div className="text-muted-foreground mt-2">Notes</div>
-            <div>{meta?.notes ?? "â€”"}</div>
+            <div>{meta?.notes ?? "-"}</div>
           </div>
         )}
       </div>
