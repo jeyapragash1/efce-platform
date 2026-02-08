@@ -166,6 +166,12 @@ tests/                  # Playwright E2E tests
 npm install
 ```
 
+### Configure API
+Create .env.local and set:
+```
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
 ### Run Development Server
 ```bash
 npm run dev
@@ -205,22 +211,20 @@ Full run and verification steps are documented in RUNBOOK.md.
 
 ## Backend Architecture
 
-EFCE UI is designed with a clear frontend–backend boundary.
-The backend uses FastAPI with PostgreSQL, focusing on domain-driven APIs and strong data validation.
+EFCE UI is paired with a FastAPI backend in the repository root (backend).
+It uses PostgreSQL, SQLAlchemy, and JWT authentication.
 
 ### Backend Stack
 
 - FastAPI (Python) – REST API framework
 - PostgreSQL – relational data storage
-- SQLAlchemy / SQLModel – ORM
+- SQLAlchemy – ORM
 - Pydantic – request/response validation
-- JWT Authentication – access and refresh tokens
-- Alembic – database migrations
-- Pytest – backend testing
+- JWT Authentication – access tokens
 
 ### API Design (Domains)
 
-The backend will expose REST endpoints aligned with existing UI domains:
+The backend exposes REST endpoints aligned with existing UI domains:
 
 - /auth – authentication and session management
 - /incidents – incident listing, filtering, creation

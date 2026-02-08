@@ -12,13 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { RiskDetailsDrawer } from "@/components/risk-details-drawer";
 import type { RiskItem } from "@/types/risk";
 import { apiClient } from "@/lib/api/client";
-
-const controls = [
-  { name: "Deploy freeze window policy", category: "Process" },
-  { name: "Mandatory rollback plan", category: "Engineering" },
-  { name: "No-manual-config in prod (policy)", category: "Platform" },
-  { name: "Alert ACK SLA + escalation", category: "Ops" },
-];
+import type { ControlItem } from "@/types/control";
 
 
 export default function RiskRegistryPage() {
@@ -27,6 +21,8 @@ export default function RiskRegistryPage() {
   const [riskList, setRiskList] = React.useState<RiskItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [controls, setControls] = React.useState<ControlItem[]>([]);
+  const [controlsLoading, setControlsLoading] = React.useState(true);
 
   React.useEffect(() => {
     let active = true;
@@ -45,6 +41,24 @@ export default function RiskRegistryPage() {
       .finally(() => {
         if (!active) return;
         setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  React.useEffect(() => {
+    let active = true;
+    setControlsLoading(true);
+    apiClient
+      .getControls()
+      .then((data) => {
+        if (!active) return;
+        setControls(data);
+      })
+      .finally(() => {
+        if (!active) return;
+        setControlsLoading(false);
       });
     return () => {
       active = false;
@@ -163,12 +177,18 @@ export default function RiskRegistryPage() {
               <Button variant="outline">Add Control</Button>
             </div>
             <div className="mt-4 grid gap-3 md:grid-cols-4">
-              {controls.map((c) => (
-                <div key={c.name} className="border rounded-lg p-4">
-                  <div className="text-sm font-medium">{c.name}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Category: {c.category}</div>
-                </div>
-              ))}
+              {controlsLoading ? (
+                <div className="text-sm text-muted-foreground">Loading controls...</div>
+              ) : controls.length === 0 ? (
+                <div className="text-sm text-muted-foreground">No controls available.</div>
+              ) : (
+                controls.map((c) => (
+                  <div key={c.id} className="border rounded-lg p-4">
+                    <div className="text-sm font-medium">{c.name}</div>
+                    <div className="text-xs text-muted-foreground mt-1">Category: {c.category}</div>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
