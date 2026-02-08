@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { NotificationsProvider, NotificationBell } from "@/components/notifications";
-import { userEvent, screen } from "@storybook/testing-library";
+import { userEvent, within } from "@storybook/testing-library";
 import { expect } from "@storybook/jest";
 
 const meta: Meta = {
@@ -22,10 +22,11 @@ export const WithNotifications: Story = {
       <NotificationBell />
     </NotificationsProvider>
   ),
-  play: async () => {
-    await userEvent.click(screen.getByLabelText("Notifications"));
-    await expect(screen.getByText("Notifications")).toBeInTheDocument();
-    await expect(screen.getByText("Report exported")).toBeInTheDocument();
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByLabelText("Notifications"));
+    await expect(canvas.getByText("Notifications")).toBeInTheDocument();
+    await expect(canvas.getAllByText("Report exported").length).toBeGreaterThan(0);
   },
 };
 
@@ -40,9 +41,10 @@ export const MarkAllRead: Story = {
       <NotificationBell />
     </NotificationsProvider>
   ),
-  play: async () => {
-    await userEvent.click(screen.getByLabelText("Notifications"));
-    await userEvent.click(screen.getByText("Mark all as read"));
-    await expect(screen.getByText("Export complete")).toBeInTheDocument();
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByLabelText("Notifications"));
+    await userEvent.click(canvas.getByText("Mark all as read"));
+    await expect(canvas.getAllByText("Export complete").length).toBeGreaterThan(0);
   },
 };

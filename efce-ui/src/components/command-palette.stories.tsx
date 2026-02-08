@@ -23,7 +23,9 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   play: async () => {
     await userEvent.keyboard('{Control>}k{/Control}');
-    await expect(screen.getByTestId('command-palette')).toBeInTheDocument();
-    await expect(screen.getByTestId('command-palette-input')).toBeInTheDocument();
+    const palette = await screen.findByTestId('command-palette');
+    const input = await screen.findByTestId('command-palette-input');
+    expect(palette).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
   },
 };

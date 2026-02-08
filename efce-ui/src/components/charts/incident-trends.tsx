@@ -13,8 +13,8 @@ import type { DailyMetric } from "@/lib/mock/metrics";
 
 export function IncidentTrends({ data }: { data: DailyMetric[] }) {
   return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full min-w-0">
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" tick={{ fontSize: 12 }} />
@@ -29,8 +29,8 @@ export function IncidentTrends({ data }: { data: DailyMetric[] }) {
 
 export function MttrTrends({ data }: { data: DailyMetric[] }) {
   return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full min-w-0">
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" tick={{ fontSize: 12 }} />

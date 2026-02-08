@@ -49,6 +49,11 @@ export function CounterfactualSim({
     items.forEach((i) => (init[i.id] = initialStrength?.[i.id] ?? 1));
     return init;
   });
+  const onChangeRef = React.useRef(onChange);
+
+  React.useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   React.useEffect(() => {
     if (!initialEnabled) return;
@@ -67,8 +72,8 @@ export function CounterfactualSim({
   const newProbability = Math.max(0, Math.min(100, baseProbability + appliedDelta));
 
   React.useEffect(() => {
-    onChange?.({ enabled, strength, probability: newProbability, appliedDelta });
-  }, [enabled, strength, newProbability, appliedDelta, onChange]);
+    onChangeRef.current?.({ enabled, strength, probability: newProbability, appliedDelta });
+  }, [enabled, strength, newProbability, appliedDelta]);
 
   return (
     <div className="space-y-4">
@@ -93,7 +98,7 @@ export function CounterfactualSim({
 
       <div className="space-y-3">
         {items.map((c) => {
-          const checked = enabled[c.id];
+          const checked = !!enabled[c.id];
           const projected = Math.max(0, Math.min(100, baseProbability + (checked ? appliedDelta : appliedDelta + c.delta)));
 
           return (

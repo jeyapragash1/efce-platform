@@ -10,6 +10,9 @@ export const metadata = {
   title: "EFCE UI",
   description: "Enterprise Failure Causality Engine UI",
   manifest: "/manifest.json",
+};
+
+export const viewport = {
   themeColor: "#0b0b0c",
 };
 

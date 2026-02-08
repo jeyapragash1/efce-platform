@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ThemeToggle } from './theme-toggle';
-import { userEvent, screen } from '@storybook/testing-library';
+import { userEvent, screen, waitFor } from '@storybook/testing-library';
 import { expect } from '@storybook/jest';
 
 const meta = {
@@ -22,7 +22,10 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   play: async () => {
     const toggle = await screen.findByLabelText('Toggle dark mode');
+    const wasDark = document.documentElement.classList.contains('dark');
     await userEvent.click(toggle);
-    await expect(document.documentElement.classList.contains('dark')).toBe(true);
+    await waitFor(() => {
+      expect(document.documentElement.classList.contains('dark')).toBe(!wasDark);
+    });
   },
 };

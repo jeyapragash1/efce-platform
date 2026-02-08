@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { RiskDetailsDrawer } from "@/components/risk-details-drawer";
 import { Button } from "@/components/ui/button";
 import type { RiskItem } from "@/types/risk";
-import { userEvent, screen } from "@storybook/testing-library";
+import { userEvent, within, screen } from "@storybook/testing-library";
 import { expect } from "@storybook/jest";
 
 const mockRisk: RiskItem = {
@@ -26,7 +26,9 @@ const Demo = () => {
   const [open, setOpen] = React.useState(false);
   return (
     <div>
-      <Button onClick={() => setOpen(true)}>Open Drawer</Button>
+      <Button onClick={() => setOpen(true)} data-testid="risk-open-drawer">
+        Open Drawer
+      </Button>
       <RiskDetailsDrawer risk={mockRisk} open={open} onClose={() => setOpen(false)} />
     </div>
   );
@@ -34,20 +36,23 @@ const Demo = () => {
 
 export const OpenDrawer: Story = {
   render: () => <Demo />,
-  play: async () => {
-    await userEvent.click(screen.getByRole("button", { name: "Open Drawer" }));
-    await expect(screen.getByTestId("risk-drawer")).toBeInTheDocument();
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByTestId("risk-open-drawer"));
+    const drawer = await screen.findByTestId("risk-drawer");
+    expect(drawer).toBeInTheDocument();
   },
 };
 
 export const AddActionPlay: Story = {
   render: () => <Demo />,
-  play: async () => {
-    await userEvent.click(screen.getByRole("button", { name: "Open Drawer" }));
-    await userEvent.click(screen.getByRole("button", { name: "Add action" }));
-    const input = await screen.findByPlaceholderText("e.g., Add canary rollback gate");
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByTestId("risk-open-drawer"));
+    await userEvent.click(screen.getByTestId("risk-drawer-add-action"));
+    const input = await screen.findByTestId("risk-action-input");
     await userEvent.type(input, "Enable staged rollout policy");
-    await userEvent.click(screen.getByRole("button", { name: "Add" }));
+    await userEvent.click(screen.getByTestId("risk-action-submit"));
     await expect(screen.getByText("Enable staged rollout policy")).toBeInTheDocument();
   },
 };

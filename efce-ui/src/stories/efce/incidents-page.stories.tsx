@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { userEvent, screen } from "@storybook/testing-library";
+import { userEvent, within } from "@storybook/testing-library";
 import { expect } from "@storybook/jest";
 import Providers from "@/app/providers";
 import IncidentsPage from "@/app/(dashboard)/dashboard/incidents/page";
@@ -25,18 +25,21 @@ export const Default: Story = {
 
 export const FiltersPlay: Story = {
   render: () => <IncidentsPage />,
-  play: async () => {
-    const search = await screen.findByPlaceholderText("Search by ID / title / service...");
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const search = await canvas.findByTestId("incidents-search");
     await userEvent.type(search, "INC-001");
-    await expect(screen.getByText("INC-001")).toBeInTheDocument();
-    await expect(screen.queryByText("INC-002")).not.toBeInTheDocument();
+    await expect(canvas.getByText("INC-001")).toBeInTheDocument();
+    await expect(canvas.queryByText("INC-002")).not.toBeInTheDocument();
   },
 };
 
 export const GenerateDemoIncident: Story = {
   render: () => <IncidentsPage />,
-  play: async () => {
-    await userEvent.click(screen.getByRole("button", { name: "Generate demo incident" }));
-    await expect(screen.getByText(/INC-0\d+/)).toBeInTheDocument();
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByTestId("incidents-generate"));
+    const ids = await canvas.findAllByText(/INC-0\d+/);
+    expect(ids.length).toBeGreaterThan(0);
   },
 };

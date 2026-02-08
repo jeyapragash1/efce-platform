@@ -5,13 +5,17 @@ import * as React from "react";
 import { Switch } from "@/components/ui/switch";
 
 export function ThemeToggle() {
-  const [dark, setDark] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+  const [dark, setDark] = React.useState(() => {
+    if (typeof window === "undefined") return false;
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark") return true;
+    if (saved === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
 
   React.useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") setDark(true);
-    else if (saved === "light") setDark(false);
-    else setDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    setMounted(true);
   }, []);
 
   React.useEffect(() => {
@@ -23,6 +27,16 @@ export function ThemeToggle() {
       localStorage.setItem("theme", "light");
     }
   }, [dark]);
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-2" data-testid="theme-toggle" aria-hidden="true">
+        <span className="text-xs">🌞</span>
+        <span className="inline-flex h-[1.15rem] w-8 rounded-full bg-input" />
+        <span className="text-xs">🌙</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-2" data-testid="theme-toggle">

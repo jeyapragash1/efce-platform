@@ -3,7 +3,7 @@
 import { Topbar } from "@/components/topbar";
 import * as React from "react";
 import { ReportPreview } from "@/components/reports/report-preview";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/components/notifications";
 import type { ReportItem } from "@/types/report";
@@ -166,7 +166,13 @@ export default function ReportsPage() {
           <div className="border rounded-lg bg-background p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="font-medium text-sm">Templates</div>
-              <Button size="sm" onClick={() => setWizardOpen(true)}>Generate report</Button>
+              <Button
+                size="sm"
+                onClick={() => setWizardOpen(true)}
+                data-testid="reports-generate"
+              >
+                Generate report
+              </Button>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {templates.map((tpl) => (
@@ -183,8 +189,10 @@ export default function ReportsPage() {
           </div>
 
           <Dialog open={wizardOpen} onOpenChange={setWizardOpen}>
-            <DialogContent className="max-w-lg">
-              <div className="text-lg font-semibold">Generate Report</div>
+            <DialogContent className="max-w-lg" data-testid="reports-wizard">
+              <DialogTitle data-testid="reports-wizard-title">
+                Generate Report
+              </DialogTitle>
               <div className="text-xs text-muted-foreground">Step {step} of 3</div>
 
               {step === 1 && (

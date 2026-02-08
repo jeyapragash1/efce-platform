@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import type { RiskItem } from "@/types/risk";
 
 export function RiskDetailsDrawer({ risk, open, onClose }: { risk: RiskItem | null, open: boolean, onClose: () => void }) {
-  if (!risk) return null;
   const defaultActions = React.useMemo(
     () => [
       "Deploy freeze window policy",
@@ -22,10 +21,15 @@ export function RiskDetailsDrawer({ risk, open, onClose }: { risk: RiskItem | nu
   const [actions, setActions] = React.useState<string[]>(defaultActions);
   const [actionOpen, setActionOpen] = React.useState(false);
   const [newAction, setNewAction] = React.useState("");
+  const riskId = risk?.id ?? "";
 
   React.useEffect(() => {
     setActions(defaultActions);
-  }, [defaultActions, risk.id]);
+    setActionOpen(false);
+    setNewAction("");
+  }, [defaultActions, riskId]);
+
+  if (!risk) return null;
 
   const handleAddAction = () => {
     if (!newAction.trim()) return;
@@ -46,7 +50,12 @@ export function RiskDetailsDrawer({ risk, open, onClose }: { risk: RiskItem | nu
         <div className="mb-4">
           <div className="flex items-center justify-between mb-1">
             <div className="font-medium text-sm">Mitigation Controls</div>
-            <Button variant="outline" size="sm" onClick={() => setActionOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setActionOpen(true)}
+              data-testid="risk-drawer-add-action"
+            >
               Add action
             </Button>
           </div>
@@ -65,11 +74,12 @@ export function RiskDetailsDrawer({ risk, open, onClose }: { risk: RiskItem | nu
                 value={newAction}
                 onChange={(e) => setNewAction(e.target.value)}
                 placeholder="e.g., Add canary rollback gate"
+                data-testid="risk-action-input"
               />
             </label>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={() => setActionOpen(false)}>Cancel</Button>
-              <Button onClick={handleAddAction}>Add</Button>
+              <Button onClick={handleAddAction} data-testid="risk-action-submit">Add</Button>
             </div>
           </DialogContent>
         </Dialog>

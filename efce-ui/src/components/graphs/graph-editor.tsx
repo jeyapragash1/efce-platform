@@ -15,7 +15,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 
 export function GraphEditor() {
@@ -221,7 +221,7 @@ export function GraphEditor() {
 
       <Dialog open={nodeModalOpen} onOpenChange={setNodeModalOpen}>
         <DialogContent className="max-w-md">
-          <div className="text-lg font-semibold">Add node</div>
+          <DialogTitle>Add node</DialogTitle>
           <input
             className="border rounded px-2 py-1 text-sm"
             aria-label="New node label"

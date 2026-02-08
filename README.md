@@ -45,7 +45,7 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - ESLint + strict TypeScript
 
 ### Tooling & Build
-- Turbopack (Next.js dev)
+- Webpack dev server (`next dev --webpack`)
 - Bundle analyzer (ANALYZE=true)
 - GitHub Actions CI
 
@@ -157,7 +157,7 @@ tests/                  # Playwright E2E tests
 ## ▶️ Getting Started
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 20.19+ or 22.12+
 - npm / pnpm / yarn
 
 ### Install
@@ -194,18 +194,10 @@ Full run and verification steps are documented in RUNBOOK.md.
 - CI workflow: .github/workflows/ci.yml
 - PWA assets: public/manifest.json, public/sw.js
 
-## 🛣️ Roadmap
+## Backend Architecture (Planned)
 
-- Backend integration (REST API)
-- Authentication and role-based access
-- Server-side persistence
-- Real report generation (PDF)
-- Graph validation and advanced versioning
-- Real-time updates
-
-## Backend Architecture
-
-EFCE UI is designed with a clear frontend–backend boundary.
+EFCE UI is designed with a clear frontend–backend boundary. The backend is not
+implemented in this repository yet; the following is the planned architecture.
 The backend uses FastAPI with PostgreSQL, focusing on domain-driven APIs and strong data validation.
 
 ### Backend Stack
@@ -240,3 +232,12 @@ The backend will expose REST endpoints aligned with existing UI domains:
 - Frontend consumes a typed API client
 - API integration is incremental and non-breaking
 - UI workflows remain stable as endpoints evolve
+
+## 🛣️ Roadmap (Backend)
+
+- Backend integration (REST API)
+- Authentication and role-based access
+- Server-side persistence
+- Real report generation (PDF)
+- Graph validation and advanced versioning
+- Real-time updates

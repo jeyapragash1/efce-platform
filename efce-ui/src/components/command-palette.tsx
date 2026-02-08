@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { incidents } from "@/lib/mock/incidents";
@@ -85,6 +85,7 @@ export function CommandPalette() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-md p-0" data-testid="command-palette">
+        <DialogTitle className="sr-only">Command palette</DialogTitle>
         <div className="p-4 border-b">
           <Input
             ref={inputRef}
@@ -105,9 +106,9 @@ export function CommandPalette() {
           {filtered.length === 0 ? (
             <div className="p-4 text-muted-foreground text-sm">No matches</div>
           ) : (
-            filtered.map((p) => (
+            filtered.map((p, index) => (
               <button
-                key={p.href}
+                key={`${p.href}-${p.category}-${index}`}
                 data-testid={`command-item-${p.label.toLowerCase().replace(/\s+/g, "-")}`}
                 className="w-full text-left px-4 py-2 hover:bg-muted"
                 onClick={() => {

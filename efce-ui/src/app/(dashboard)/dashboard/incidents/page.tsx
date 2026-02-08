@@ -133,6 +133,7 @@ export default function IncidentsPage() {
                 placeholder="Search by ID / title / service..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                data-testid="incidents-search"
               />
             </div>
 
@@ -179,7 +180,7 @@ export default function IncidentsPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={generateIncident}>
+              <Button variant="outline" onClick={generateIncident} data-testid="incidents-generate">
                 Generate demo incident
               </Button>
               <Button variant="outline" onClick={clearFilters}>
