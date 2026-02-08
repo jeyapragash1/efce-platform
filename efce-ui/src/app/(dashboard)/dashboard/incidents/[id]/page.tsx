@@ -1,8 +1,8 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import { notFound } from "next/navigation";
 import { Topbar } from "@/components/topbar";
-import { incidents } from "@/lib/mock/incidents";
-import { getCausalGraph } from "@/lib/mock/causal-graphs";
-import { getAttribution, getCounterfactuals } from "@/lib/mock/analysis";
+import { apiClient } from "@/lib/api/client";
 import { CounterfactualSim } from "@/components/counterfactual-sim";
 import { ExportIncidentPdfButton } from "@/components/export-incident-pdf";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,12 +16,14 @@ type PageProps = {
 export default async function IncidentDetails({ params }: PageProps) {
   const { id } = await params;
 
-  const incident = incidents.find((i) => i.id === id);
+  const incident = await apiClient.getIncident(id).catch(() => null);
   if (!incident) return notFound();
 
-  const graph = getCausalGraph(incident.id);
-  const attribution = getAttribution(incident.id);
-  const counterfactuals = getCounterfactuals(incident.id);
+  const [graph, attribution, counterfactuals] = await Promise.all([
+    apiClient.getCausalGraph(incident.id),
+    apiClient.getAttribution(incident.id),
+    apiClient.getCounterfactuals(incident.id),
+  ]);
 
   const baseFailureProbability = 92;
 
