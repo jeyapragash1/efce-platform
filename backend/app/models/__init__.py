@@ -5,6 +5,7 @@ from app.models.report import Report
 from app.models.metric import DailyMetric
 from app.models.pattern import CausePattern, ServiceCauseMatrix, RepeatRateTrend
 from app.models.graph import CausalGraph
+from app.models.control import Control
 from app.models.analysis import AttributionBundle, CounterfactualBundle
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     "CausalGraph",
     "AttributionBundle",
     "CounterfactualBundle",
+    "Control",
 ]

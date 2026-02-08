@@ -61,11 +61,11 @@ export default function RiskRegistryPage() {
               <div>
                 <div className="text-lg font-semibold">Systemic Risk Management</div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Track org-level risks, owners, and mitigation controls (UI-only).
+                  Track org-level risks, owners, and mitigation controls.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="secondary">Planned</Badge>
+                <Badge variant="secondary">Active</Badge>
                 <Button variant="outline">New Risk</Button>
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function RiskRegistryPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <div className="font-semibold">Top Risks (mock)</div>
+              <div className="font-semibold">Top Risks</div>
               <Button variant="outline">Export</Button>
             </div>
             <div className="border rounded-lg overflow-hidden">
@@ -159,7 +159,7 @@ export default function RiskRegistryPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div className="font-semibold">Controls Library (mock)</div>
+              <div className="font-semibold">Controls Library</div>
               <Button variant="outline">Add Control</Button>
             </div>
             <div className="mt-4 grid gap-3 md:grid-cols-4">

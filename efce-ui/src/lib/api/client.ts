@@ -8,6 +8,7 @@ import type { PatternsSummary } from "@/types/patterns";
 import type { AttributionItem, CounterfactualItem } from "@/types/analysis";
 import type { CausalGraph } from "@/types/graph";
 import type { UserProfile } from "@/types/user";
+import type { ControlItem } from "@/types/control";
 
 type AuthToken = { access_token: string; token_type: string };
 
@@ -142,5 +143,8 @@ export const apiClient = {
   },
   async getCounterfactuals(incidentId: string): Promise<CounterfactualItem[]> {
     return request<CounterfactualItem[]>(`/analysis/counterfactuals/${incidentId}`);
+  },
+  async getControls(): Promise<ControlItem[]> {
+    return request<ControlItem[]>("/controls");
   },
 };

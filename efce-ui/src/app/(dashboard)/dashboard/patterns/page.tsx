@@ -71,7 +71,7 @@ export default function PatternsPage() {
           <Card>
             <CardContent className="p-4">
               <div className="text-sm text-muted-foreground">
-                Total repeat patterns (mock)
+                Total repeat patterns
               </div>
               <div className="text-2xl font-semibold">{loading ? "—" : totalRepeats}</div>
             </CardContent>
@@ -108,7 +108,7 @@ export default function PatternsPage() {
               <RepeatRateChart data={repeatRateTrend} />
             )}
             <p className="text-xs text-muted-foreground mt-2">
-              This metric represents the percentage of incidents caused by previously seen patterns (mock).
+              This metric represents the percentage of incidents caused by previously seen patterns.
             </p>
           </CardContent>
         </Card>

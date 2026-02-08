@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
           <Card>
             <CardContent className="p-4">
-              <div className="text-sm text-muted-foreground">SEV1 (mock)</div>
+              <div className="text-sm text-muted-foreground">SEV1 (last 30d)</div>
               <div className="text-2xl font-semibold">{loading ? "—" : sev1}</div>
             </CardContent>
           </Card>

@@ -49,7 +49,7 @@ export default function SearchPage() {
               <div>
                 <div className="text-lg font-semibold">Global Search</div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Search incidents by ID, title, or service (frontend-only).
+                  Search incidents by ID, title, or service.
                 </p>
               </div>
               <Button variant="outline" onClick={() => setQ("")}>

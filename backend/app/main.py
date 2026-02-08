@@ -14,6 +14,7 @@ from app.routers import (
     patterns_router,
     graphs_router,
     analysis_router,
+    controls_router,
 )
 from app.seed import seed_data
 
@@ -37,6 +38,7 @@ app.include_router(metrics_router)
 app.include_router(patterns_router)
 app.include_router(graphs_router)
 app.include_router(analysis_router)
+app.include_router(controls_router)
 
 
 @app.on_event("startup")

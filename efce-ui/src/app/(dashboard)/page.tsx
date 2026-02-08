@@ -8,6 +8,11 @@ export default async function Page() {
   const incidents = await apiClient.getIncidents();
   const open = incidents.filter((i) => i.status === "OPEN").length;
   const sev1 = incidents.filter((i) => i.severity === "SEV1").length;
+  const resolved = incidents.filter((i) => i.status === "RESOLVED");
+  const mttr =
+    Math.round(
+      resolved.reduce((a, b) => a + b.durationMin, 0) / Math.max(1, resolved.length)
+    ) || 0;
 
   return (
     <>
@@ -29,8 +34,8 @@ export default async function Page() {
 
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground">MTTR (mock)</div>
-            <div className="text-2xl font-semibold">58m</div>
+            <div className="text-sm text-muted-foreground">MTTR (minutes)</div>
+            <div className="text-2xl font-semibold">{mttr}m</div>
           </CardContent>
         </Card>
       </div>

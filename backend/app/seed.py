@@ -8,6 +8,7 @@ from app.models import (
     CausePattern,
     CounterfactualBundle,
     CausalGraph,
+    Control,
     DailyMetric,
     Incident,
     RepeatRateTrend,
@@ -285,5 +286,14 @@ def seed_data(db: Session) -> None:
             {"id": "cf-tests", "label": "Enforce CI test pass for critical services", "delta": -28},
         ]
         db.add(CounterfactualBundle(incident_id="INC-001", items=counterfactuals))
+
+    if not db.query(Control).first():
+        controls = [
+            Control(name="Deploy freeze window policy", category="Process"),
+            Control(name="Mandatory rollback plan", category="Engineering"),
+            Control(name="No-manual-config in prod (policy)", category="Platform"),
+            Control(name="Alert ACK SLA + escalation", category="Ops"),
+        ]
+        db.add_all(controls)
 
     db.commit()

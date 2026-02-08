@@ -7,6 +7,7 @@ from app.routers.metrics import router as metrics_router
 from app.routers.patterns import router as patterns_router
 from app.routers.graphs import router as graphs_router
 from app.routers.analysis import router as analysis_router
+from app.routers.controls import router as controls_router
 
 __all__ = [
     "auth_router",
@@ -18,4 +19,5 @@ __all__ = [
     "patterns_router",
     "graphs_router",
     "analysis_router",
+    "controls_router",
 ]

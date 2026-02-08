@@ -7,6 +7,7 @@ from app.schemas.metric import DailyMetric
 from app.schemas.pattern import PatternsSummary, CausePattern, ServiceCauseMatrixRow, RepeatRateTrend
 from app.schemas.graph import CausalGraph
 from app.schemas.analysis import AttributionItem, CounterfactualItem
+from app.schemas.control import Control
 
 __all__ = [
     "Token",
@@ -28,4 +29,5 @@ __all__ = [
     "CausalGraph",
     "AttributionItem",
     "CounterfactualItem",
+    "Control",
 ]
