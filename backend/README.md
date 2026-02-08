@@ -11,10 +11,19 @@ FastAPI backend for EFCE platform with PostgreSQL and JWT auth.
 4. Start server:
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
+## Migrations
+Run migrations before starting the server:
+```bash
+alembic upgrade head
+```
+
 ## Notes
 - On first run the database tables are created automatically.
 - Default seed data is inserted if tables are empty.
 - User registration is restricted to admins (invite-only model).
+
+## Feature Backing
+- Notifications, onboarding state, scenarios, graph studio state, and export logs are stored in the database.
 
 ## Default Admin
 - Email: admin@efce.local

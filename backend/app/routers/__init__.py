@@ -8,6 +8,10 @@ from app.routers.patterns import router as patterns_router
 from app.routers.graphs import router as graphs_router
 from app.routers.analysis import router as analysis_router
 from app.routers.controls import router as controls_router
+from app.routers.notifications import router as notifications_router
+from app.routers.onboarding import router as onboarding_router
+from app.routers.scenarios import router as scenarios_router
+from app.routers.graph_studio import router as graph_studio_router
 
 __all__ = [
     "auth_router",
@@ -20,4 +24,8 @@ __all__ = [
     "graphs_router",
     "analysis_router",
     "controls_router",
+    "notifications_router",
+    "onboarding_router",
+    "scenarios_router",
+    "graph_studio_router",
 ]

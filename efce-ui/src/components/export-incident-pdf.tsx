@@ -7,6 +7,7 @@ import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "./notifications";
+import { apiClient } from "@/lib/api/client";
 
 type Incident = {
   id: string;
@@ -214,6 +215,7 @@ export function ExportIncidentPdfButton({
     }
 
     doc.save(`EFCE_${incident.id}_Incident_Report.pdf`);
+    apiClient.exportIncidentReport(incident.id).catch(() => undefined);
     notify({ message: "Report exported as PDF", type: "success" });
   };
 

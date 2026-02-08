@@ -9,6 +9,11 @@ import type { AttributionItem, CounterfactualItem } from "@/types/analysis";
 import type { CausalGraph } from "@/types/graph";
 import type { UserProfile } from "@/types/user";
 import type { ControlItem } from "@/types/control";
+import type { NotificationItem, NotificationCreate } from "@/types/notification";
+import type { OnboardingState, OnboardingUpdate } from "@/types/onboarding";
+import type { ScenarioCreate, ScenarioItem, ScenarioUpdate } from "@/types/scenario";
+import type { GraphStudioState } from "@/types/graph-studio";
+import type { ReportExport } from "@/types/report-export";
 
 type AuthToken = { access_token: string; token_type: string };
 type ApiIncident = {
@@ -53,6 +58,31 @@ type ApiPatternsSummary = {
   serviceCauseMatrix?: ApiServiceCauseMatrixRow[];
   repeat_rate_trend?: ApiRepeatRate[];
   repeatRateTrend?: ApiRepeatRate[];
+};
+type ApiNotification = {
+  id: number;
+  message: string;
+  type?: "info" | "success" | "error";
+  read: boolean;
+  created_at: string;
+};
+type ApiOnboardingState = {
+  step: number;
+  dismissed: boolean;
+};
+type ApiScenario = {
+  id: string;
+  name: string;
+  updated_at: string;
+  state: {
+    enabled: Record<string, boolean>;
+    strength: Record<string, number>;
+  };
+};
+type ApiReportExport = {
+  id: number;
+  incident_id: string;
+  created_at: string;
 };
 
 const getBaseUrl = () =>
@@ -134,6 +164,27 @@ const mapPatterns = (data: ApiPatternsSummary): PatternsSummary => ({
   })),
 });
 
+const mapNotification = (data: ApiNotification): NotificationItem => ({
+  id: data.id,
+  message: data.message,
+  type: data.type,
+  read: data.read,
+  createdAt: data.created_at,
+});
+
+const mapScenario = (data: ApiScenario): ScenarioItem => ({
+  id: data.id,
+  name: data.name,
+  updatedAt: data.updated_at,
+  state: data.state,
+});
+
+const mapReportExport = (data: ApiReportExport): ReportExport => ({
+  id: data.id,
+  incidentId: data.incident_id,
+  createdAt: data.created_at,
+});
+
 export const apiClient = {
   async register(payload: { name: string; email: string; org?: string; password: string }) {
     return request<AuthToken>("/auth/register", {
@@ -205,5 +256,77 @@ export const apiClient = {
   },
   async getControls(): Promise<ControlItem[]> {
     return request<ControlItem[]>("/controls");
+  },
+  async getNotifications(): Promise<NotificationItem[]> {
+    const data = await request<ApiNotification[]>("/notifications");
+    return data.map(mapNotification);
+  },
+  async createNotification(payload: NotificationCreate): Promise<NotificationItem> {
+    const data = await request<ApiNotification>("/notifications", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    return mapNotification(data);
+  },
+  async markNotificationRead(id: number): Promise<NotificationItem> {
+    const data = await request<ApiNotification>(`/notifications/${id}/read`, {
+      method: "PATCH",
+    });
+    return mapNotification(data);
+  },
+  async markAllNotificationsRead(): Promise<void> {
+    await request<void>("/notifications/read-all", { method: "POST" });
+  },
+  async deleteNotification(id: number): Promise<void> {
+    await request<void>(`/notifications/${id}`, { method: "DELETE" });
+  },
+  async getOnboardingState(): Promise<OnboardingState> {
+    return request<ApiOnboardingState>("/onboarding");
+  },
+  async updateOnboardingState(payload: OnboardingUpdate): Promise<OnboardingState> {
+    return request<ApiOnboardingState>("/onboarding", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  },
+  async getScenarios(): Promise<ScenarioItem[]> {
+    const data = await request<ApiScenario[]>("/scenarios");
+    return data.map(mapScenario);
+  },
+  async createScenario(payload: ScenarioCreate): Promise<ScenarioItem> {
+    const data = await request<ApiScenario>("/scenarios", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    return mapScenario(data);
+  },
+  async updateScenario(id: string, payload: ScenarioUpdate): Promise<ScenarioItem> {
+    const data = await request<ApiScenario>(`/scenarios/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+    return mapScenario(data);
+  },
+  async deleteScenario(id: string): Promise<void> {
+    await request<void>(`/scenarios/${id}`, { method: "DELETE" });
+  },
+  async getGraphStudio(): Promise<GraphStudioState> {
+    return request<GraphStudioState>("/graphs/studio");
+  },
+  async updateGraphStudio(payload: GraphStudioState): Promise<GraphStudioState> {
+    return request<GraphStudioState>("/graphs/studio", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  },
+  async exportIncidentReport(incidentId: string): Promise<ReportExport> {
+    const data = await request<ApiReportExport>(`/reports/incident/${incidentId}/export`, {
+      method: "POST",
+    });
+    return mapReportExport(data);
+  },
+  async searchIncidents(query: string): Promise<Incident[]> {
+    const data = await request<ApiIncident[]>(`/incidents/search?q=${encodeURIComponent(query)}`);
+    return data.map(mapIncident);
   },
 };

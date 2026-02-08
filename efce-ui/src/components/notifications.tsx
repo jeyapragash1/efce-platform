@@ -6,17 +6,13 @@
 import * as React from "react";
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiClient } from "@/lib/api/client";
+import type { NotificationCreate, NotificationItem } from "@/types/notification";
 
-export type Notification = {
-  id: string;
-  message: string;
-  type?: "info" | "success" | "error";
-  time?: string;
-  read?: boolean;
-};
+export type Notification = NotificationItem & { time?: string };
 
 const NotificationContext = React.createContext<{
-  notify: (n: Omit<Notification, "id">) => void;
+  notify: (n: NotificationCreate) => void;
   notifications: Notification[];
   remove: (id: string) => void;
   markRead: (id: string) => void;
@@ -39,26 +35,70 @@ export function NotificationsProvider({
   const [notifications, setNotifications] = React.useState<Notification[]>(
     () => initialNotifications ?? []
   );
+  const [toasts, setToasts] = React.useState<Notification[]>([]);
 
-  const notify = React.useCallback((n: Omit<Notification, "id">) => {
-    const id = Math.random().toString(36).slice(2);
-    setNotifications((prev) => [
-      ...prev,
-      { ...n, id, time: new Date().toLocaleTimeString(), read: false },
-    ]);
-    setTimeout(() => setNotifications((prev) => prev.filter((x) => x.id !== id)), 4000);
+  React.useEffect(() => {
+    let active = true;
+    if (initialNotifications) return;
+    apiClient
+      .getNotifications()
+      .then((data) => {
+        if (!active) return;
+        setNotifications(data.map((n) => ({ ...n, time: new Date(n.createdAt).toLocaleTimeString() })));
+      })
+      .catch(() => {
+        if (!active) return;
+        setNotifications([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [initialNotifications]);
+
+  const notify = React.useCallback((n: NotificationCreate) => {
+    apiClient
+      .createNotification(n)
+      .then((created) => {
+        const item = { ...created, time: new Date(created.createdAt).toLocaleTimeString() };
+        setNotifications((prev) => [item, ...prev]);
+        setToasts((prev) => [...prev, item]);
+        setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== item.id)), 4000);
+      })
+      .catch(() => {
+        const fallback: Notification = {
+          id: Date.now(),
+          message: n.message,
+          type: n.type,
+          read: false,
+          createdAt: new Date().toISOString(),
+          time: new Date().toLocaleTimeString(),
+        };
+        setNotifications((prev) => [fallback, ...prev]);
+        setToasts((prev) => [...prev, fallback]);
+        setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== fallback.id)), 4000);
+      });
   }, []);
 
-  const remove = (id: string) => setNotifications((prev) => prev.filter((n) => n.id !== id));
-  const markRead = (id: string) =>
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-  const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const remove = (id: string) => {
+    const numericId = Number(id);
+    setNotifications((prev) => prev.filter((n) => n.id !== numericId));
+    apiClient.deleteNotification(numericId).catch(() => undefined);
+  };
+  const markRead = (id: string) => {
+    const numericId = Number(id);
+    setNotifications((prev) => prev.map((n) => (n.id === numericId ? { ...n, read: true } : n)));
+    apiClient.markNotificationRead(numericId).catch(() => undefined);
+  };
+  const markAllRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    apiClient.markAllNotificationsRead().catch(() => undefined);
+  };
 
   return (
     <NotificationContext.Provider value={{ notify, notifications, remove, markRead, markAllRead }}>
       {children}
       <div className="fixed top-4 right-4 z-50 space-y-2">
-        {notifications.map((n) => (
+        {toasts.map((n) => (
           <div
             key={n.id}
             className={cn(

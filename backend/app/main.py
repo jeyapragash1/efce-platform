@@ -15,6 +15,10 @@ from app.routers import (
     graphs_router,
     analysis_router,
     controls_router,
+    notifications_router,
+    onboarding_router,
+    scenarios_router,
+    graph_studio_router,
 )
 from app.seed import seed_data
 
@@ -37,13 +41,16 @@ app.include_router(reports_router)
 app.include_router(metrics_router)
 app.include_router(patterns_router)
 app.include_router(graphs_router)
+app.include_router(graph_studio_router)
 app.include_router(analysis_router)
 app.include_router(controls_router)
+app.include_router(notifications_router)
+app.include_router(onboarding_router)
+app.include_router(scenarios_router)
 
 
 @app.on_event("startup")
 def on_startup() -> None:
-    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         seed_data(db)

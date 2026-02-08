@@ -10,23 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { CounterfactualSim } from "@/components/counterfactual-sim";
 import { useNotifications } from "@/components/notifications";
-import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import { apiClient } from "@/lib/api/client";
 import type { CounterfactualItem } from "@/types/analysis";
+import type { ScenarioItem, ScenarioState } from "@/types/scenario";
 
-type ScenarioState = {
-  enabled: Record<string, boolean>;
-  strength: Record<string, number>;
-};
-
-type StoredScenario = {
-  id: string;
-  name: string;
-  updated: string;
-  state: ScenarioState;
-};
-
-type ScenarioListItem = StoredScenario | { id: string; name: string; updated: string };
+type ScenarioListItem = ScenarioItem;
 
 const scenarioTemplates = [
   { name: "Block late-night deploy overrides", effect: "High ROI" },
@@ -34,18 +22,12 @@ const scenarioTemplates = [
   { name: "Prevent manual prod config changes", effect: "Medium ROI" },
 ];
 
-const savedScenarios: ScenarioListItem[] = [
-  { id: "SCN-11", name: "Deploy controls bundle", updated: "2026-01-31" },
-  { id: "SCN-12", name: "Alert hygiene policy", updated: "2026-01-30" },
-];
 
 const widthClass = (value: number) => {
   const rounded = Math.round(value / 5) * 5;
   const clamped = Math.min(100, Math.max(0, rounded));
   return `w-[${clamped}%]`;
 };
-
-const hasState = (item: ScenarioListItem): item is StoredScenario => "state" in item;
 
 export default function CounterfactualLabPage() {
   const baseProbability = 85;
@@ -61,7 +43,7 @@ export default function CounterfactualLabPage() {
   const [scenarioB, setScenarioB] = React.useState<typeof scenarioA>(null);
   const [scenarioASeed, setScenarioASeed] = React.useState<ScenarioState | null>(null);
   const [scenarioBSeed, setScenarioBSeed] = React.useState<ScenarioState | null>(null);
-  const [saved, setSaved] = useLocalStorage<StoredScenario[]>("efce-scenarios", []);
+  const [saved, setSaved] = React.useState<ScenarioItem[]>([]);
 
   React.useEffect(() => {
     let active = true;
@@ -80,13 +62,31 @@ export default function CounterfactualLabPage() {
     };
   }, []);
 
+  React.useEffect(() => {
+    let active = true;
+    apiClient
+      .getScenarios()
+      .then((data) => {
+        if (!active) return;
+        setSaved(data);
+      })
+      .catch(() => {
+        if (!active) return;
+        setSaved([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const saveScenario = (name: string, state: ScenarioState) => {
-    const id = Math.random().toString(36).slice(2);
-    setSaved((prev) => [
-      { id, name, updated: new Date().toLocaleDateString(), state },
-      ...prev,
-    ]);
-    notify({ message: "Scenario saved", type: "success" });
+    apiClient
+      .createScenario({ name, state })
+      .then((created) => {
+        setSaved((prev) => [created, ...prev]);
+        notify({ message: "Scenario saved", type: "success" });
+      })
+      .catch(() => notify({ message: "Failed to save scenario", type: "error" }));
   };
 
   const baseline = baseProbability;
@@ -213,22 +213,23 @@ export default function CounterfactualLabPage() {
             </div>
 
             <div className="mt-4 space-y-2">
-              {(saved.length ? saved : savedScenarios).map((s) => (
+              {saved.map((s) => (
                 <div key={s.id} className="border rounded-lg p-4 flex items-center justify-between">
                   <div>
                     <div className="text-sm font-medium">{s.id} — {s.name}</div>
-                    <div className="text-xs text-muted-foreground">Updated: {s.updated}</div>
-                  </div>
-                  {hasState(s) ? (
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" onClick={() => setScenarioASeed(s.state)}>Load A</Button>
-                      <Button variant="outline" onClick={() => setScenarioBSeed(s.state)}>Load B</Button>
+                    <div className="text-xs text-muted-foreground">
+                      Updated: {new Date(s.updatedAt).toLocaleDateString()}
                     </div>
-                  ) : (
-                    <Button variant="outline">Open</Button>
-                  )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setScenarioASeed(s.state)}>Load A</Button>
+                    <Button variant="outline" onClick={() => setScenarioBSeed(s.state)}>Load B</Button>
+                  </div>
                 </div>
               ))}
+              {saved.length === 0 && (
+                <div className="text-sm text-muted-foreground">No saved scenarios yet.</div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -240,7 +241,7 @@ export default function CounterfactualLabPage() {
             <ul className="text-sm text-muted-foreground mt-2 space-y-1">
               <li>• Add interactive controls (switches + sliders)</li>
               <li>• Scenario comparison table (delta vs baseline)</li>
-              <li>• Save scenarios to localStorage</li>
+              <li>• Save scenarios to backend</li>
               <li>• Export scenario report to PDF</li>
               <li>• Link scenarios to Risk Registry items</li>
             </ul>

@@ -68,6 +68,7 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - Action toasts
 - Notification drawer with unread indicators
 - Mark-as-read functionality
+- Notifications stored in backend per user
 
 ### Reports
 - List + preview layout
@@ -75,6 +76,7 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - Report templates gallery
 - Report generation wizard (frontend simulation)
 - Loading, empty, and error states
+- Export actions logged in backend
 
 ### Risk Registry
 - Tabular risk list with drawer-based details
@@ -87,18 +89,19 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - Add/remove nodes and edges
 - Edge confidence slider
 - Evidence notes panel
-- Local versioning using localStorage
+- Backend persistence for graph state and versions
 
 ### Counterfactual Lab
 - Scenario builder with toggles and sliders
 - Scenario A vs B comparison
 - Delta chart against baseline
-- Save/load scenarios locally
+- Save/load scenarios in backend
 
 ### Incidents
 - Filtering and search
 - Demo incident generator (creates incidents via API)
 - API-backed incident lifecycle
+- Server-side search endpoint
 
 ### Settings
 - Theme toggle
@@ -232,6 +235,10 @@ The backend exposes REST endpoints aligned with existing UI domains:
 - /reports – report templates, generation, history
 - /graphs – causal graph storage and versioning
 - /scenarios – counterfactual scenarios and comparisons
+- /notifications – notifications and read state
+- /onboarding – onboarding progress
+- /reports/incident/{id}/export – export logs
+- /incidents/search – search endpoint
 
 ### Data & Persistence
 

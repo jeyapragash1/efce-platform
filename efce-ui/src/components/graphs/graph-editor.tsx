@@ -18,7 +18,8 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import { apiClient } from "@/lib/api/client";
+import type { GraphStudioState } from "@/types/graph-studio";
 
 export function GraphEditor() {
   const [nodes, setNodes, onNodesChange] = useNodesState([
@@ -44,9 +45,10 @@ export function GraphEditor() {
   const [nodeModalOpen, setNodeModalOpen] = React.useState(false);
   const [evidenceText, setEvidenceText] = React.useState("");
   const [evidenceNotes, setEvidenceNotes] = React.useState<{ id: string; text: string; time: string }[]>([]);
-  const [versions, setVersions] = useLocalStorage<
+  const [versions, setVersions] = React.useState<
     { id: string; name: string; createdAt: string; nodes: Node[]; edges: Edge[] }[]
-  >("efce-graph-versions", []);
+  >([]);
+  const [loading, setLoading] = React.useState(true);
 
   const createId = React.useCallback(() => {
     if (typeof globalThis.crypto?.randomUUID === "function") {
@@ -55,19 +57,56 @@ export function GraphEditor() {
     return `id-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }, []);
 
+  React.useEffect(() => {
+    let active = true;
+    apiClient
+      .getGraphStudio()
+      .then((data) => {
+        if (!active) return;
+        setNodes(data.nodes as Node[]);
+        setEdges(data.edges as Edge[]);
+        setEvidenceNotes((data.evidence as { id: string; text: string; time: string }[]) ?? []);
+        setVersions((data.versions as { id: string; name: string; createdAt: string; nodes: Node[]; edges: Edge[] }[]) ?? []);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [setNodes, setEdges]);
+
+  const persistStudio = React.useCallback(
+    (next: Partial<GraphStudioState>) => {
+      const payload: GraphStudioState = {
+        nodes: next.nodes ?? (nodes as unknown as GraphStudioState["nodes"]),
+        edges: next.edges ?? (edges as unknown as GraphStudioState["edges"]),
+        evidence: next.evidence ?? (evidenceNotes as unknown as GraphStudioState["evidence"]),
+        versions: next.versions ?? (versions as unknown as GraphStudioState["versions"]),
+      };
+      apiClient.updateGraphStudio(payload).catch(() => undefined);
+    },
+    [nodes, edges, evidenceNotes, versions]
+  );
+
   // Add node
   const addNode = () => {
     if (!newNodeLabel.trim()) return;
     const id = createId();
-    setNodes((nds) => [
-      ...nds,
-      {
-        id,
-        position: { x: 200, y: 200 },
-        data: { label: newNodeLabel },
-        style: { borderRadius: 12, padding: 10 },
-      },
-    ]);
+    setNodes((nds) => {
+      const updated = [
+        ...nds,
+        {
+          id,
+          position: { x: 200, y: 200 },
+          data: { label: newNodeLabel },
+          style: { borderRadius: 12, padding: 10 },
+        },
+      ];
+      persistStudio({ nodes: updated as unknown as GraphStudioState["nodes"] });
+      return updated;
+    });
     setNewNodeLabel("");
     setNodeModalOpen(false);
   };
@@ -76,7 +115,14 @@ export function GraphEditor() {
   const onConnect = React.useCallback(
     (params: Connection) =>
       setEdges((eds) =>
-        addEdge({ ...params, label: `${Math.round(edgeWeight * 100)}%`, animated: true }, eds)
+        {
+          const updated = addEdge(
+            { ...params, label: `${Math.round(edgeWeight * 100)}%`, animated: true },
+            eds
+          );
+          persistStudio({ edges: updated as unknown as GraphStudioState["edges"] });
+          return updated;
+        }
       ),
     [edgeWeight, setEdges]
   );
@@ -84,8 +130,16 @@ export function GraphEditor() {
   // Remove node
   const removeNode = () => {
     if (!selectedNode) return;
-    setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
-    setEdges((eds) => eds.filter((e) => e.source !== selectedNode.id && e.target !== selectedNode.id));
+    setNodes((nds) => {
+      const updated = nds.filter((n) => n.id !== selectedNode.id);
+      persistStudio({ nodes: updated as unknown as GraphStudioState["nodes"] });
+      return updated;
+    });
+    setEdges((eds) => {
+      const updated = eds.filter((e) => e.source !== selectedNode.id && e.target !== selectedNode.id);
+      persistStudio({ edges: updated as unknown as GraphStudioState["edges"] });
+      return updated;
+    });
     setSelectedNode(null);
   };
 
@@ -97,25 +151,31 @@ export function GraphEditor() {
       source: newConnection.source,
       target: newConnection.target,
     } as Connection & { source: string; target: string };
-    setEdges((eds) =>
-      eds.map((e) =>
+    setEdges((eds) => {
+      const updated = eds.map((e) =>
         e.id === oldEdge.id ? { ...e, ...connection, label: oldEdge.label } : e
-      )
-    );
+      );
+      persistStudio({ edges: updated as unknown as GraphStudioState["edges"] });
+      return updated;
+    });
   };
 
   const saveVersion = () => {
     const id = createId();
-    setVersions((prev) => [
-      {
-        id,
-        name: `Version ${prev.length + 1}`,
-        createdAt: new Date().toLocaleString(),
-        nodes,
-        edges,
-      },
-      ...prev,
-    ]);
+    setVersions((prev) => {
+      const updated = [
+        {
+          id,
+          name: `Version ${prev.length + 1}`,
+          createdAt: new Date().toLocaleString(),
+          nodes,
+          edges,
+        },
+        ...prev,
+      ];
+      persistStudio({ versions: updated as unknown as GraphStudioState["versions"] });
+      return updated;
+    });
   };
 
   const loadVersion = (id: string) => {
@@ -123,15 +183,23 @@ export function GraphEditor() {
     if (!version) return;
     setNodes(version.nodes);
     setEdges(version.edges);
+    persistStudio({
+      nodes: version.nodes as unknown as GraphStudioState["nodes"],
+      edges: version.edges as unknown as GraphStudioState["edges"],
+    });
     setSelectedNode(null);
   };
 
   const addEvidence = () => {
     if (!evidenceText.trim()) return;
-    setEvidenceNotes((prev) => [
-      { id: Math.random().toString(36).slice(2), text: evidenceText.trim(), time: new Date().toLocaleTimeString() },
-      ...prev,
-    ]);
+    setEvidenceNotes((prev) => {
+      const updated = [
+        { id: Math.random().toString(36).slice(2), text: evidenceText.trim(), time: new Date().toLocaleTimeString() },
+        ...prev,
+      ];
+      persistStudio({ evidence: updated as unknown as GraphStudioState["evidence"] });
+      return updated;
+    });
     setEvidenceText("");
   };
 
@@ -165,6 +233,9 @@ export function GraphEditor() {
 
       <div className="grid gap-3 p-3 md:grid-cols-[1fr_280px]">
         <div className="min-h-130 rounded-lg border bg-background">
+          {loading ? (
+            <div className="h-130 w-full rounded bg-muted animate-pulse" />
+          ) : (
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -179,6 +250,7 @@ export function GraphEditor() {
             <Controls />
             <Background />
           </ReactFlow>
+          )}
         </div>
 
         <div className="rounded-lg border bg-background p-3 space-y-4">

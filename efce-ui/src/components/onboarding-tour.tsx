@@ -2,9 +2,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { apiClient } from "@/lib/api/client";
+import type { OnboardingState } from "@/types/onboarding";
 
 const TOUR_STEPS = [
   {
@@ -34,12 +36,39 @@ const TOUR_STEPS = [
 ];
 
 export function OnboardingTour() {
-  const [step, setStep] = useState(0);
-  const [dismissed, setDismissed] = useState(false);
+  const [state, setState] = useState<OnboardingState>({ step: 0, dismissed: false });
+  const [loading, setLoading] = useState(true);
 
-  if (dismissed || step >= TOUR_STEPS.length) return null;
+  useEffect(() => {
+    let active = true;
+    apiClient
+      .getOnboardingState()
+      .then((data) => {
+        if (!active) return;
+        setState(data);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  const { title, content } = TOUR_STEPS[step];
+  const setStep = (nextStep: number) => {
+    setState((prev) => ({ ...prev, step: nextStep }));
+    apiClient.updateOnboardingState({ step: nextStep }).catch(() => undefined);
+  };
+
+  const dismiss = () => {
+    setState((prev) => ({ ...prev, dismissed: true }));
+    apiClient.updateOnboardingState({ dismissed: true }).catch(() => undefined);
+  };
+
+  if (loading || state.dismissed || state.step >= TOUR_STEPS.length) return null;
+
+  const { title, content } = TOUR_STEPS[state.step];
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none">
@@ -49,11 +78,11 @@ export function OnboardingTour() {
             <div className="font-semibold text-lg">{title}</div>
             <div className="text-sm text-muted-foreground">{content}</div>
             <div className="flex gap-2 justify-end pt-2">
-              <Button variant="outline" size="sm" onClick={() => setDismissed(true)}>
+              <Button variant="outline" size="sm" onClick={dismiss}>
                 Skip
               </Button>
-              <Button size="sm" onClick={() => setStep((s) => s + 1)}>
-                {step === TOUR_STEPS.length - 1 ? "Finish" : "Next"}
+              <Button size="sm" onClick={() => setStep(state.step + 1)}>
+                {state.step === TOUR_STEPS.length - 1 ? "Finish" : "Next"}
               </Button>
             </div>
           </CardContent>

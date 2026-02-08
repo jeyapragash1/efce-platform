@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from app.core.deps import get_current_user, get_db
 from app.models.user import User
@@ -16,6 +17,27 @@ def list_incidents(
     current_user: User = Depends(get_current_user),
 ) -> list[IncidentSchema]:
     return db.query(Incident).order_by(Incident.started_at.desc()).all()
+
+
+@router.get("/search", response_model=list[IncidentSchema])
+def search_incidents(
+    q: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[IncidentSchema]:
+    query = f"%{q}%"
+    return (
+        db.query(Incident)
+        .filter(
+            or_(
+                Incident.id.ilike(query),
+                Incident.title.ilike(query),
+                Incident.service.ilike(query),
+            )
+        )
+        .order_by(Incident.started_at.desc())
+        .all()
+    )
 
 
 @router.get("/{incident_id}", response_model=IncidentSchema)

@@ -7,6 +7,11 @@ from app.models.pattern import CausePattern, ServiceCauseMatrix, RepeatRateTrend
 from app.models.graph import CausalGraph
 from app.models.control import Control
 from app.models.analysis import AttributionBundle, CounterfactualBundle
+from app.models.notification import Notification
+from app.models.onboarding import OnboardingState
+from app.models.scenario import Scenario
+from app.models.graph_studio import GraphStudioState
+from app.models.report_export import ReportExport
 
 __all__ = [
     "User",
@@ -21,4 +26,9 @@ __all__ = [
     "AttributionBundle",
     "CounterfactualBundle",
     "Control",
+    "Notification",
+    "OnboardingState",
+    "Scenario",
+    "GraphStudioState",
+    "ReportExport",
 ]

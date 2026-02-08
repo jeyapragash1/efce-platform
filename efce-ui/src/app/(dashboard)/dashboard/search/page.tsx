@@ -22,10 +22,33 @@ const tips = [
 export default function SearchPage() {
   const [q, setQ] = React.useState("");
   const [incidents, setIncidents] = React.useState<Incident[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    apiClient.getIncidents().then((data) => setIncidents(data));
-  }, []);
+    const trimmed = q.trim();
+    if (!trimmed) {
+      setIncidents([]);
+      return;
+    }
+    let active = true;
+    setLoading(true);
+    const handle = setTimeout(() => {
+      apiClient
+        .searchIncidents(trimmed)
+        .then((data) => {
+          if (!active) return;
+          setIncidents(data);
+        })
+        .finally(() => {
+          if (!active) return;
+          setLoading(false);
+        });
+    }, 300);
+    return () => {
+      active = false;
+      clearTimeout(handle);
+    };
+  }, [q]);
 
   const results = React.useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -83,6 +106,8 @@ export default function SearchPage() {
               <div className="text-sm text-muted-foreground">
                 Start typing to search.
               </div>
+            ) : loading ? (
+              <div className="text-sm text-muted-foreground">Searching...</div>
             ) : results.length === 0 ? (
               <div className="text-sm text-muted-foreground">
                 No matches found.

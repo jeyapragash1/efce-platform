@@ -4,8 +4,10 @@ from sqlalchemy.orm import Session
 from app.core.deps import get_current_user, get_db
 from app.models.user import User
 from app.models.report import Report
+from app.models.report_export import ReportExport
 from app.schemas.report import Report as ReportSchema
 from app.schemas.report import ReportCreate
+from app.schemas.report_export import ReportExport as ReportExportSchema
 
 router = APIRouter(prefix="/reports", tags=["reports"])
 
@@ -37,3 +39,16 @@ def create_report(
     db.commit()
     db.refresh(report)
     return report
+
+
+@router.post("/incident/{incident_id}/export", response_model=ReportExportSchema, status_code=status.HTTP_201_CREATED)
+def export_incident_report(
+    incident_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> ReportExportSchema:
+    export = ReportExport(user_id=current_user.id, incident_id=incident_id)
+    db.add(export)
+    db.commit()
+    db.refresh(export)
+    return export
