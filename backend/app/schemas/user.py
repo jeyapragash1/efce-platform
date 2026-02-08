@@ -1,9 +1,9 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class UserProfile(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     org: str | None = None
     avatar_url: str | None = None
 
