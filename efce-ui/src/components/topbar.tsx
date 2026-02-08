@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
 import { NotificationBell } from "./notifications";
@@ -42,3 +44,4 @@ export function Topbar({
     </header>
   );
 }
+

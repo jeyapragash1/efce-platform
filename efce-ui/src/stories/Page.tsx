@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import React from 'react';
 
 import { Header } from './Header';
@@ -71,3 +73,4 @@ export const Page: React.FC = () => {
     </article>
   );
 };
+

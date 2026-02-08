@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 // src/components/ui/dialog.tsx
 "use client";
 
@@ -54,3 +56,4 @@ const DialogTitle = React.forwardRef<
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 export { Dialog, DialogTrigger, DialogContent, DialogTitle };
+

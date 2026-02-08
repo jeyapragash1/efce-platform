@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { userEvent, waitFor, within, screen } from "@storybook/testing-library";
@@ -79,3 +81,4 @@ export const ErrorState: Story = {
     });
   },
 };
+

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { NotificationsProvider, NotificationBell } from "@/components/notifications";
 import { userEvent, within } from "@storybook/testing-library";
@@ -48,3 +50,4 @@ export const MarkAllRead: Story = {
     await expect(canvas.getAllByText("Export complete").length).toBeGreaterThan(0);
   },
 };
+

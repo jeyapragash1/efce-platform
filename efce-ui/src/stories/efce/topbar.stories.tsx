@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Topbar } from "@/components/topbar";
 
@@ -17,3 +19,4 @@ export const Default: Story = {
     title: "Overview",
   },
 };
+

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import './button.css';
 
 export interface ButtonProps {
@@ -37,3 +39,4 @@ export const Button = ({
     </button>
   );
 };
+

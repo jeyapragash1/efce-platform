@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { GraphEditor } from './graph-editor';
 
@@ -22,3 +24,4 @@ export const Default: Story = {
     </div>
   ),
 };
+

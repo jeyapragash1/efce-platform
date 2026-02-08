@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import { Topbar } from "@/components/topbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -96,3 +98,4 @@ export default function HelpPage() {
     </>
   );
 }
+

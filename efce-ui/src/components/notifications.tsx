@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 // src/components/notifications.tsx
 "use client";
 
@@ -137,3 +139,4 @@ export function NotificationBell() {
     </div>
   );
 }
+

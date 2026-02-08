@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 
 "use client";
 import { Topbar } from "@/components/topbar";
@@ -273,3 +275,4 @@ export default function ReportsPage() {
     </>
   );
 }
+

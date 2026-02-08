@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 const CACHE_NAME = "efce-ui-v1";
 const OFFLINE_URLS = ["/", "/dashboard", "/manifest.json"];
 
@@ -26,3 +28,4 @@ self.addEventListener("fetch", (event) => {
     )
   );
 });
+

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import { test, expect } from "@playwright/test";
 
 test("command palette navigation", async ({ page }) => {
@@ -57,3 +59,4 @@ test("theme persists across reload", async ({ page }) => {
   await page.reload();
   await expect(page.locator("html")).toHaveClass(/dark/);
 });
+

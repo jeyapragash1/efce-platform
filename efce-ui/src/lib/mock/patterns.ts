@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 export type CausePattern = {
   cause: string;
   count: number; // how many incidents
@@ -73,3 +75,4 @@ export const repeatRateTrend = [
   { date: "2026-01-30", repeatRate: 28 },
   { date: "2026-01-31", repeatRate: 34 },
 ];
+

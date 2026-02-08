@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import React from "react";
@@ -37,3 +39,4 @@ export function CausalGraph<T>({
     </div>
   );
 }
+

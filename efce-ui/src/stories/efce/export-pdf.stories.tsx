@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ExportIncidentPdfButton } from "@/components/export-incident-pdf";
 import { NotificationsProvider } from "@/components/notifications";
@@ -48,3 +50,4 @@ export const Disabled: Story = {
     disabled: true,
   },
 };
+

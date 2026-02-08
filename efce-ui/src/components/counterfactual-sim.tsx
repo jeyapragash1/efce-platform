@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 // Helper to map percent to Tailwind width class (rounded to nearest 5%)
@@ -142,3 +144,4 @@ export function CounterfactualSim({
     </div>
   );
 }
+

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import { DashboardShell } from "@/components/dashboard-shell";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -13,4 +15,5 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+
 

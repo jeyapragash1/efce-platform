@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 // src/components/reports/report-preview.tsx
 "use client";
 
@@ -57,3 +59,4 @@ export function ReportPreview({
     </Card>
   );
 }
+

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import * as React from "react";
@@ -24,3 +26,4 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
   return [value, setValue] as const;
 }
+

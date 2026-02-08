@@ -29,8 +29,9 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - Lucide Icons
 
 ### Data & State
-- Client-side persistence (localStorage)
 - API client boundary (src/lib/api/client.ts)
+- Server-backed data via FastAPI + PostgreSQL
+- Client-side persistence for scenarios and local preferences
 
 ### Visualization
 - React Flow 11 – causal graph editor
@@ -96,8 +97,8 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 
 ### Incidents
 - Filtering and search
-- Demo incident generator
-- Persistent state via localStorage
+- Demo incident generator (creates incidents via API)
+- API-backed incident lifecycle
 
 ### Settings
 - Theme toggle
@@ -144,10 +145,15 @@ src/
 ├── components/         # Feature and shared components
 │   └── ui/             # shadcn/ui primitives
 ├── lib/
-│   ├── mock/           # Mock data modules
-│   └── api/            # Mocked API client boundary
+│   ├── mock/           # Storybook fixtures
+│   └── api/            # API client boundary
 ├── stories/            # Storybook stories & play tests
 tests/                  # Playwright E2E tests
+
+backend/
+├── app/                # FastAPI app
+├── requirements.txt    # Backend dependencies
+└── .env.example        # Backend environment variables
 
 ## 🤖 CI & Automation
 
@@ -194,10 +200,27 @@ Full run and verification steps are documented in RUNBOOK.md.
 - CI workflow: .github/workflows/ci.yml
 - PWA assets: public/manifest.json, public/sw.js
 
-## Backend Architecture (Planned)
+## Backend Architecture
 
-EFCE UI is designed with a clear frontend–backend boundary. The backend is not
-implemented in this repository yet; the following is the planned architecture.
+The backend is implemented with FastAPI, PostgreSQL, and JWT authentication. It
+provides endpoints for incidents, risks, reports, metrics, patterns, graphs, and
+analysis data.
+
+### Backend Setup
+```bash
+cd backend
+python -m venv .venv
+./.venv/Scripts/activate
+pip install -r requirements.txt
+copy .env.example .env
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Frontend API Configuration
+Create efce-ui/.env.local and set:
+```
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
 The backend uses FastAPI with PostgreSQL, focusing on domain-driven APIs and strong data validation.
 
 ### Backend Stack

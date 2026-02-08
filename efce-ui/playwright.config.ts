@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
@@ -27,3 +29,4 @@ export default defineConfig({
     },
   ],
 });
+

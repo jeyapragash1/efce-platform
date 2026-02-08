@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { RiskItem } from "@/types/risk";
 
 export const risks: RiskItem[] = [
@@ -6,3 +8,4 @@ export const risks: RiskItem[] = [
   { id: "RISK-03", risk: "Alert fatigue / missing ACK SLA", owner: "Ops", level: "HIGH", status: "IN PROGRESS" },
   { id: "RISK-04", risk: "Missing rate-limits on critical endpoints", owner: "Backend", level: "MEDIUM", status: "OPEN" },
 ];
+

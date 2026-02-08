@@ -3,6 +3,8 @@
 ## Overview
 This repository contains a front-end application for the EFCE platform. The active app lives in the efce-ui folder and is built with Next.js (App Router), React, TypeScript, and Tailwind CSS. It includes Storybook for component development, Vitest for unit testing, and Playwright for interaction and e2e coverage.
 
+The repository now also includes a FastAPI backend in the backend folder, backed by PostgreSQL and JWT authentication.
+
 ## Project Purpose And Value
 The EFCE platform is designed to help teams understand incidents and risks by modeling causal relationships and evaluating mitigation strategies. It provides interactive tools for building causal graphs, reviewing evidence, and exploring counterfactual outcomes so stakeholders can make better decisions.
 
@@ -33,6 +35,11 @@ This section captures the work completed during the troubleshooting and stabiliz
 - Installed Playwright browsers required by Storybook tests.
 - Reconciled dev vs build tooling with Webpack for dev and Turbopack for build to avoid asset and build errors.
 
+### Backend Foundation
+- Added a FastAPI backend with PostgreSQL support and JWT auth endpoints.
+- Seeded baseline data for incidents, risks, reports, metrics, patterns, graphs, and analysis.
+- Exposed API routes for incidents, risks, reports, metrics, patterns, causal graphs, and analysis.
+
 ### Next.js App Updates
 - Replaced the default home page with a redirect to /dashboard.
 - Moved themeColor metadata to the viewport export to avoid Next.js warnings.
@@ -59,6 +66,7 @@ This section captures the work completed during the troubleshooting and stabiliz
 
 ## Current Project Structure
 - efce-ui: main front-end app
+- backend: FastAPI + PostgreSQL backend
 - src/app: Next.js App Router pages and layouts
 - src/components: reusable UI and feature components
 - src/components/graphs: graph editor and causal graph

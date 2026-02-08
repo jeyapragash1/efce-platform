@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 export type DailyMetric = {
   date: string; // YYYY-MM-DD
   incidents: number;
@@ -13,3 +15,4 @@ export const dailyMetrics: DailyMetric[] = [
   { date: "2026-01-30", incidents: 1, mttr: 58 },
   { date: "2026-01-31", incidents: 1, mttr: 49 },
 ];
+

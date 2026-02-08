@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client"
 
 import * as React from "react"
@@ -89,3 +91,4 @@ function TabsContent({
 }
 
 export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants }
+

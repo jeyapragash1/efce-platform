@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 export type UserProfile = {
   name: string;
   email: string;
@@ -11,3 +13,4 @@ export const mockUser: UserProfile = {
   org: "Contoso Health",
   avatarUrl: undefined,
 };
+

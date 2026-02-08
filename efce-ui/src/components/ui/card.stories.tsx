@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './card';
 
@@ -40,3 +42,4 @@ export const WithContent: Story = {
     </Card>
   ),
 };
+

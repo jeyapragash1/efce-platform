@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Incident } from "@/types/incident";
 
 export const incidents: Incident[] = [
@@ -20,3 +22,4 @@ export const incidents: Incident[] = [
     durationMin: 25,
   },
 ];
+

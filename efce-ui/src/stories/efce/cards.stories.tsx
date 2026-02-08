@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -37,3 +39,4 @@ export const KPIGrid: Story = {
     </div>
   ),
 };
+

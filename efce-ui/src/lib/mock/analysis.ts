@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 export function getAttribution(incidentId: string) {
   if (incidentId === "INC-001") {
     return [
@@ -23,3 +25,4 @@ export function getCounterfactuals(incidentId: string) {
 
   return [{ id: "none", label: "No counterfactuals available", delta: 0 }];
 }
+

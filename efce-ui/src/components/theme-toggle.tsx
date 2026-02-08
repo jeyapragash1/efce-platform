@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 // src/components/theme-toggle.tsx
 "use client";
 
@@ -46,3 +48,4 @@ export function ThemeToggle() {
     </div>
   );
 }
+

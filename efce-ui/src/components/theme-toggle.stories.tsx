@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/react';
 import { ThemeToggle } from './theme-toggle';
 import { userEvent, screen, waitFor } from '@storybook/testing-library';
@@ -29,3 +31,4 @@ export const Default: Story = {
     });
   },
 };
+

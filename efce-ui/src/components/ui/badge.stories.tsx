@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/react';
 import { Badge } from './badge';
 
@@ -54,3 +56,4 @@ export const Grouped: Story = {
     </div>
   ),
 };
+

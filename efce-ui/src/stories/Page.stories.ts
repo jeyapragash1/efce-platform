@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 
 import { expect, userEvent, within } from 'storybook/test';
@@ -31,3 +33,4 @@ export const LoggedIn: Story = {
     await expect(logoutButton).toBeInTheDocument();
   },
 };
+

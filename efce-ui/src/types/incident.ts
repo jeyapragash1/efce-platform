@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 export type Severity = "SEV1" | "SEV2" | "SEV3";
 export type IncidentStatus = "OPEN" | "RESOLVED";
 
@@ -10,3 +12,4 @@ export type Incident = {
   startedAt: string;
   durationMin: number;
 };
+

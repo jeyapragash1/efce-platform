@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import * as React from "react";
@@ -7,9 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { CounterfactualSim } from "@/components/counterfactual-sim";
-import { getCounterfactuals } from "@/lib/mock/analysis";
 import { useNotifications } from "@/components/notifications";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import { apiClient } from "@/lib/api/client";
+import type { CounterfactualItem } from "@/types/analysis";
 
 type ScenarioState = {
   enabled: Record<string, boolean>;
@@ -47,6 +50,8 @@ const hasState = (item: ScenarioListItem): item is StoredScenario => "state" in 
 export default function CounterfactualLabPage() {
   const baseProbability = 85;
   const { notify } = useNotifications();
+  const [items, setItems] = React.useState<CounterfactualItem[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [scenarioA, setScenarioA] = React.useState<{
     enabled: Record<string, boolean>;
     strength: Record<string, number>;
@@ -57,6 +62,23 @@ export default function CounterfactualLabPage() {
   const [scenarioASeed, setScenarioASeed] = React.useState<ScenarioState | null>(null);
   const [scenarioBSeed, setScenarioBSeed] = React.useState<ScenarioState | null>(null);
   const [saved, setSaved] = useLocalStorage<StoredScenario[]>("efce-scenarios", []);
+
+  React.useEffect(() => {
+    let active = true;
+    apiClient
+      .getCounterfactuals("INC-001")
+      .then((data) => {
+        if (!active) return;
+        setItems(data);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const saveScenario = (name: string, state: ScenarioState) => {
     const id = Math.random().toString(36).slice(2);
@@ -99,11 +121,14 @@ export default function CounterfactualLabPage() {
                 <CounterfactualSim
                   title="Scenario A"
                   baseProbability={baseProbability}
-                  items={getCounterfactuals("INC-001")}
+                  items={items}
                   initialEnabled={scenarioASeed?.enabled}
                   initialStrength={scenarioASeed?.strength}
                   onChange={(state) => setScenarioA(state)}
                 />
+                {loading && (
+                  <div className="text-xs text-muted-foreground mt-2">Loading counterfactuals...</div>
+                )}
                 <Button
                   size="sm"
                   className="mt-3"
@@ -116,11 +141,14 @@ export default function CounterfactualLabPage() {
                 <CounterfactualSim
                   title="Scenario B"
                   baseProbability={baseProbability}
-                  items={getCounterfactuals("INC-001")}
+                  items={items}
                   initialEnabled={scenarioBSeed?.enabled}
                   initialStrength={scenarioBSeed?.strength}
                   onChange={(state) => setScenarioB(state)}
                 />
+                {loading && (
+                  <div className="text-xs text-muted-foreground mt-2">Loading counterfactuals...</div>
+                )}
                 <Button
                   size="sm"
                   className="mt-3"

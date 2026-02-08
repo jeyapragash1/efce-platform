@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { userEvent, within } from "@storybook/testing-library";
 import { expect } from "@storybook/jest";
@@ -43,3 +45,4 @@ export const GenerateDemoIncident: Story = {
     expect(ids.length).toBeGreaterThan(0);
   },
 };
+

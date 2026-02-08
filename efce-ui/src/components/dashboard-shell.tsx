@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import { useState } from "react";
@@ -41,3 +43,4 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+

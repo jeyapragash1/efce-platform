@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Preview } from "@storybook/react";
 import Providers from "../src/app/providers";
 import "../src/app/globals.css";
@@ -41,3 +43,4 @@ const preview: Preview = {
 };
 
 export default preview;
+

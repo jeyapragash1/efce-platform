@@ -29,8 +29,9 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - Lucide Icons
 
 ### Data & State
-- Client-side persistence (localStorage)
 - API client boundary (src/lib/api/client.ts)
+- Server-backed data via FastAPI + PostgreSQL
+- Client-side persistence for scenarios and local preferences
 
 ### Visualization
 - React Flow 11 – causal graph editor
@@ -45,7 +46,7 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 - ESLint + strict TypeScript
 
 ### Tooling & Build
-- Turbopack (Next.js dev)
+- Webpack dev server (`next dev --webpack`)
 - Bundle analyzer (ANALYZE=true)
 - GitHub Actions CI
 
@@ -96,8 +97,8 @@ The system follows a full-stack architecture with a clean API boundary, typed co
 
 ### Incidents
 - Filtering and search
-- Demo incident generator
-- Persistent state via localStorage
+- Demo incident generator (creates incidents via API)
+- API-backed incident lifecycle
 
 ### Settings
 - Theme toggle
@@ -144,8 +145,8 @@ src/
 ├── components/         # Feature and shared components
 │   └── ui/             # shadcn/ui primitives
 ├── lib/
-│   ├── mock/           # Mock data modules
-│   └── api/            # Mocked API client boundary
+│   ├── mock/           # Storybook fixtures
+│   └── api/            # API client boundary
 ├── stories/            # Storybook stories & play tests
 tests/                  # Playwright E2E tests
 
@@ -157,7 +158,7 @@ tests/                  # Playwright E2E tests
 ## ▶️ Getting Started
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 20.19+ or 22.12+
 - npm / pnpm / yarn
 
 ### Install
@@ -196,8 +197,7 @@ Full run and verification steps are documented in RUNBOOK.md.
 
 ## 🛣️ Roadmap
 
-- Backend integration (REST API)
-- Authentication and role-based access
+- Expanded authentication and role-based access
 - Server-side persistence
 - Real report generation (PDF)
 - Graph validation and advanced versioning

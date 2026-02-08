@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/react';
 import { ProfileSettings } from './profile-settings';
 
@@ -17,3 +19,4 @@ export const Default: Story = {
     </div>
   ),
 };
+

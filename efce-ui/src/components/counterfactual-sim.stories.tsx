@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/react';
 import { CounterfactualSim } from './counterfactual-sim';
 
@@ -37,3 +39,4 @@ export const LowRisk: Story = {
     items: mockControls,
   },
 };
+

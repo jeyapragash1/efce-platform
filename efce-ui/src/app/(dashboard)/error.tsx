@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -29,3 +31,4 @@ export default function DashboardError({
     </div>
   );
 }
+

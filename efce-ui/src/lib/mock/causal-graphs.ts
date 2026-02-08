@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Node, Edge } from "reactflow";
 
 type EFCEEventMeta = {
@@ -126,3 +128,4 @@ export function getCausalGraph(
     edges: [],
   };
 }
+

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from '@storybook/react';
 import { CommandPalette } from './command-palette';
 import { userEvent, screen } from '@storybook/testing-library';
@@ -29,3 +31,4 @@ export const Default: Story = {
     expect(input).toBeInTheDocument();
   },
 };
+

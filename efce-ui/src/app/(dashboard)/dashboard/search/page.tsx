@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import * as React from "react";
@@ -7,7 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { incidents } from "@/lib/mock/incidents";
+import { apiClient } from "@/lib/api/client";
+import type { Incident } from "@/types/incident";
 
 const tips = [
   "Try: INC-001",
@@ -18,6 +21,11 @@ const tips = [
 
 export default function SearchPage() {
   const [q, setQ] = React.useState("");
+  const [incidents, setIncidents] = React.useState<Incident[]>([]);
+
+  React.useEffect(() => {
+    apiClient.getIncidents().then((data) => setIncidents(data));
+  }, []);
 
   const results = React.useMemo(() => {
     const s = q.trim().toLowerCase();

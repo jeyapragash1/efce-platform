@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Sidebar } from "@/components/sidebar";
 
@@ -13,3 +15,4 @@ export default meta;
 type Story = StoryObj<typeof Sidebar>;
 
 export const Default: Story = {};
+

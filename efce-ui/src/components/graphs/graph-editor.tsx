@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 // src/components/graphs/graph-editor.tsx
 "use client";
 
@@ -245,3 +247,4 @@ export function GraphEditor() {
     </div>
   );
 }
+

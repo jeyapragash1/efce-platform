@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { NextConfig } from "next";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 
@@ -10,3 +12,4 @@ const nextConfig: NextConfig = {
 };
 
 export default withBundleAnalyzer(nextConfig);
+

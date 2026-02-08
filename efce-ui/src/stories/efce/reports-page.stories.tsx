@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { userEvent, within, screen } from "@storybook/testing-library";
@@ -98,3 +100,4 @@ export const ErrorApiState: Story = {
     expect(error).toBeInTheDocument();
   },
 };
+

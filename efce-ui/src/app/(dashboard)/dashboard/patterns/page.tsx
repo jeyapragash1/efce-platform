@@ -1,15 +1,14 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import dynamic from "next/dynamic";
 import { Topbar } from "@/components/topbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  topCauses,
-  matrixCauses,
-  serviceCauseMatrix,
-  repeatRateTrend,
-} from "@/lib/mock/patterns";
+import * as React from "react";
+import { apiClient } from "@/lib/api/client";
+import type { PatternsSummary } from "@/types/patterns";
 const RepeatRateChart = dynamic(
   () => import("@/components/charts/repeat-rate-chart").then((m) => m.RepeatRateChart),
   { ssr: false, loading: () => <div className="h-75 w-full rounded bg-muted animate-pulse" /> }
@@ -35,6 +34,31 @@ function barWidthClass(v: number) {
 }
 
 export default function PatternsPage() {
+  const [patterns, setPatterns] = React.useState<PatternsSummary | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let active = true;
+    apiClient
+      .getPatterns()
+      .then((data) => {
+        if (!active) return;
+        setPatterns(data);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const topCauses = patterns?.topCauses ?? [];
+  const matrixCauses = patterns?.matrixCauses ?? [];
+  const serviceCauseMatrix = patterns?.serviceCauseMatrix ?? [];
+  const repeatRateTrend = patterns?.repeatRateTrend ?? [];
+
   const totalRepeats = topCauses.reduce((sum, c) => sum + c.count, 0);
 
   return (
@@ -49,7 +73,7 @@ export default function PatternsPage() {
               <div className="text-sm text-muted-foreground">
                 Total repeat patterns (mock)
               </div>
-              <div className="text-2xl font-semibold">{totalRepeats}</div>
+              <div className="text-2xl font-semibold">{loading ? "—" : totalRepeats}</div>
             </CardContent>
           </Card>
 
@@ -57,7 +81,7 @@ export default function PatternsPage() {
             <CardContent className="p-4">
               <div className="text-sm text-muted-foreground">Top repeating cause</div>
               <div className="text-base font-semibold mt-1">
-                {topCauses[0]?.cause ?? "-"}
+                {loading ? "—" : topCauses[0]?.cause ?? "-"}
               </div>
             </CardContent>
           </Card>
@@ -76,7 +100,9 @@ export default function PatternsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="font-semibold mb-2">Repeat-Cause Rate (7d)</div>
-            {repeatRateTrend.length === 0 ? (
+            {loading ? (
+              <div className="h-75 w-full rounded bg-muted animate-pulse" />
+            ) : repeatRateTrend.length === 0 ? (
               <div className="text-sm text-muted-foreground">No trend data available.</div>
             ) : (
               <RepeatRateChart data={repeatRateTrend} />
@@ -92,7 +118,9 @@ export default function PatternsPage() {
           <CardContent className="p-4">
             <div className="font-semibold mb-3">Top Recurring Causes</div>
 
-            {topCauses.length === 0 ? (
+            {loading ? (
+              <div className="text-sm text-muted-foreground">Loading causes...</div>
+            ) : topCauses.length === 0 ? (
               <div className="text-sm text-muted-foreground">No recurring causes available.</div>
             ) : (
               <div className="space-y-3">
@@ -123,7 +151,9 @@ export default function PatternsPage() {
           <CardContent className="p-4">
             <div className="font-semibold mb-3">Service × Cause Matrix</div>
 
-            {serviceCauseMatrix.length === 0 ? (
+            {loading ? (
+              <div className="text-sm text-muted-foreground">Loading matrix...</div>
+            ) : serviceCauseMatrix.length === 0 ? (
               <div className="text-sm text-muted-foreground">No matrix data available.</div>
             ) : (
               <div className="overflow-auto border rounded-lg">

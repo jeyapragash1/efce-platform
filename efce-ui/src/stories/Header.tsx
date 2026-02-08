@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import { Button } from './Button';
 import './header.css';
 
@@ -52,3 +54,4 @@ export const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps
     </div>
   </header>
 );
+

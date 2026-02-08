@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 // src/components/risk-details-drawer.tsx
 "use client";
 
@@ -105,3 +107,4 @@ export function RiskDetailsDrawer({ risk, open, onClose }: { risk: RiskItem | nu
     </Dialog>
   );
 }
+

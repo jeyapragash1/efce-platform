@@ -38,6 +38,42 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+const mapIncident = (data: any): Incident => ({
+  id: data.id,
+  title: data.title,
+  service: data.service,
+  severity: data.severity,
+  status: data.status,
+  startedAt: data.started_at ?? data.startedAt,
+  durationMin: data.duration_min ?? data.durationMin,
+});
+
+const mapProfile = (data: any): UserProfile => ({
+  name: data.name,
+  email: data.email,
+  org: data.org,
+  avatarUrl: data.avatar_url ?? data.avatarUrl,
+});
+
+const mapPatterns = (data: any): PatternsSummary => ({
+  topCauses: (data.top_causes ?? data.topCauses ?? []).map((item: any) => ({
+    cause: item.cause,
+    count: item.count,
+    avgImpact: item.avg_impact ?? item.avgImpact,
+  })),
+  matrixCauses: data.matrix_causes ?? data.matrixCauses ?? [],
+  serviceCauseMatrix: (data.service_cause_matrix ?? data.serviceCauseMatrix ?? []).map(
+    (row: any) => ({
+      service: row.service,
+      causes: row.causes,
+    })
+  ),
+  repeatRateTrend: (data.repeat_rate_trend ?? data.repeatRateTrend ?? []).map((row: any) => ({
+    date: row.date,
+    repeatRate: row.repeat_rate ?? row.repeatRate,
+  })),
+});
+
 export const apiClient = {
   async register(payload: { name: string; email: string; org?: string; password: string }) {
     return request<AuthToken>("/auth/register", {
@@ -52,10 +88,11 @@ export const apiClient = {
     });
   },
   async getProfile(): Promise<UserProfile> {
-    return request<UserProfile>("/profile");
+    const data = await request<UserProfile>("/profile");
+    return mapProfile(data);
   },
   async updateProfile(payload: Partial<UserProfile>): Promise<UserProfile> {
-    return request<UserProfile>("/profile", {
+    const data = await request<UserProfile>("/profile", {
       method: "PUT",
       body: JSON.stringify({
         name: payload.name,
@@ -63,15 +100,18 @@ export const apiClient = {
         avatar_url: payload.avatarUrl,
       }),
     });
+    return mapProfile(data);
   },
   async getIncidents(): Promise<Incident[]> {
-    return request<Incident[]>("/incidents");
+    const data = await request<Incident[]>("/incidents");
+    return data.map(mapIncident);
   },
   async getIncident(id: string): Promise<Incident> {
-    return request<Incident>(`/incidents/${id}`);
+    const data = await request<Incident>(`/incidents/${id}`);
+    return mapIncident(data);
   },
   async createIncident(payload: Incident): Promise<Incident> {
-    return request<Incident>("/incidents", {
+    const data = await request<Incident>("/incidents", {
       method: "POST",
       body: JSON.stringify({
         ...payload,
@@ -79,6 +119,7 @@ export const apiClient = {
         duration_min: payload.durationMin,
       }),
     });
+    return mapIncident(data);
   },
   async getRisks(): Promise<RiskItem[]> {
     return request<RiskItem[]>("/risks");
@@ -90,7 +131,8 @@ export const apiClient = {
     return request<DailyMetric[]>("/metrics/daily");
   },
   async getPatterns(): Promise<PatternsSummary> {
-    return request<PatternsSummary>("/patterns");
+    const data = await request<PatternsSummary>("/patterns");
+    return mapPatterns(data);
   },
   async getCausalGraph(incidentId: string): Promise<CausalGraph> {
     return request<CausalGraph>(`/graphs/causal/${incidentId}`);

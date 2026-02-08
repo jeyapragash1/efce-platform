@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 "use client";
 
 import {
@@ -29,3 +31,4 @@ export function RepeatRateChart({
     </div>
   );
 }
+

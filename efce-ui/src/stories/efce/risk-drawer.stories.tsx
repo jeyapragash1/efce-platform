@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { RiskDetailsDrawer } from "@/components/risk-details-drawer";
@@ -56,3 +58,4 @@ export const AddActionPlay: Story = {
     await expect(screen.getByText("Enable staged rollout policy")).toBeInTheDocument();
   },
 };
+

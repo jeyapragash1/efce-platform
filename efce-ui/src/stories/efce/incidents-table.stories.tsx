@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -91,3 +93,4 @@ export const Empty: Story = {
     </div>
   ),
 };
+

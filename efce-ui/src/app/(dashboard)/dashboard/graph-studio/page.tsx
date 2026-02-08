@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 
 "use client";
 import dynamic from "next/dynamic";
@@ -118,3 +120,4 @@ export default function GraphStudioPage() {
     </>
   );
 }
+

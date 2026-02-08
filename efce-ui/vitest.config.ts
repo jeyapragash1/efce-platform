@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Jeyapragash. All rights reserved.
+
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -35,3 +37,4 @@ export default defineConfig({
     ],
   },
 });
+
